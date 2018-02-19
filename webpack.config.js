@@ -1,5 +1,6 @@
 var path = require('path');
 var webpack = require('webpack');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
   entry: {
@@ -7,7 +8,7 @@ module.exports = {
   },
 
   output: {
-    path: `${__dirname}/../app/assets/javascripts/webpack`,
+    path: `${__dirname}/dist`,
     filename: 'bundle.js'
   },
 
@@ -55,6 +56,10 @@ module.exports = {
       {
         test: /\.png/,
         loader: "url-loader?limit=10000&mimetype=image/png"
+      },
+      {
+        test: /\.html$/,
+        loader: "html-loader"
       }
     ]
   },
@@ -73,6 +78,9 @@ module.exports = {
   },
 
   plugins: [
-    new webpack.HotModuleReplacementPlugin()
+    new webpack.HotModuleReplacementPlugin(),
+    new HtmlWebpackPlugin({
+      template: './index.html'
+    })
   ],
 }
