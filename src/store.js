@@ -4,7 +4,9 @@ import { createStore, applyMiddleware } from 'redux';
 import reducer from './reducer';
 import thunk from 'redux-thunk';
 
-export const history = createHistory()
+export const history = createHistory({
+  basename: BASENAME
+});
 
 export const store = createStore(
     reducer,

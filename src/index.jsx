@@ -4,7 +4,7 @@ import { Provider } from 'react-redux';
 
 import { ConnectedRouter } from 'react-router-redux';
 
-import { Route } from 'react-router-dom';
+import { Route, Redirect, Switch } from 'react-router-dom';
 
 import { store, history } from './store';
 import Home from './components/home.jsx';
@@ -15,11 +15,12 @@ document.addEventListener('DOMContentLoaded', () => {
   render(
     <Provider store={store}>
       <ConnectedRouter history={ history }>
-        <div>
+        <Switch>
+          <Redirect exact from="/" to="/backlog" />
           <Route exact path="/" component={Home}/>
           <Route path="/backlog" component={Backlog}/>
           <Route path="/kanban/:sprintId" component={Kanban}/>
-        </div>
+        </Switch>
       </ConnectedRouter>
     </Provider>,
     document.getElementById('react-content')

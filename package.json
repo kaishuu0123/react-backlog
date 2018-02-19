@@ -4,8 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "webpack-dev-server": "webpack-dev-server -w",
-    "webpack-watch": "webpack -w",
+    "dev": "webpack-dev-server -w --config webpack.dev.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

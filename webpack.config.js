@@ -1,6 +1,7 @@
 var path = require('path');
 var webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const src = path.join(__dirname, 'src');
 
 module.exports = {
   entry: {
@@ -19,6 +20,7 @@ module.exports = {
         test: /\.(js|jsx)$/,
         loader: "babel",
         exclude: /node_modules/,
+        include: src,
         query: {
           presets: [
             "es2015",
@@ -30,22 +32,11 @@ module.exports = {
         test: /\.css$/,
         loader: "style-loader!css-loader"
       },
-      {
-        test: /\.eot(\?v=\d+\.\d+\.\d+)?$/,
-        loader: "file-loader"
-      },
-      {
-        test: /\.(woff|woff2)$/,
-        loader: "url-loader?prefix=font/&limit=5000"
-      },
-      {
-        test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/,
-        loader: "url-loader?limit=10000&mimetype=application/octet-stream"
-      },
-      {
-        test: /\.svg(\?v=\d+\.\d+\.\d+)?$/,
-        loader: "url-loader?limit=10000&mimetype=image/svg+xml"
-      },
+      { test: /\.svg$/, loader: 'url?limit=65000&mimetype=image/svg+xml&name=public/fonts/[name].[ext]' },
+      { test: /\.woff$/, loader: 'url?limit=65000&mimetype=application/font-woff&name=public/fonts/[name].[ext]' },
+      { test: /\.woff2$/, loader: 'url?limit=65000&mimetype=application/font-woff2&name=public/fonts/[name].[ext]' },
+      { test: /\.[ot]tf$/, loader: 'url?limit=65000&mimetype=application/octet-stream&name=public/fonts/[name].[ext]' },
+      { test: /\.eot$/, loader: 'url?limit=65000&mimetype=application/vnd.ms-fontobject&name=public/fonts/[name].[ext]' },
       {
         test: /\.gif/,
         loader: "url-loader?limit=10000&mimetype=image/gif"
@@ -69,19 +60,20 @@ module.exports = {
     moduleExtensions: ['-loader']
   },
 
-  devServer: {
-    historyApiFallback: true,
-    hot: true,
-    contentBase: path.join(__dirname, 'public'),
-    host: '0.0.0.0',
-    port: 7000,
-    inline: true
+  resolve: {
+    modules: [
+      "node_modules",
+      path.resolve(__dirname, "src")
+    ],
+    extensions: ['.js', '.jsx']
   },
 
   plugins: [
-    new webpack.HotModuleReplacementPlugin(),
     new HtmlWebpackPlugin({
       template: './index.html'
+    }),
+    new webpack.DefinePlugin({
+      'BASENAME': JSON.stringify('/')
     })
   ],
 }
