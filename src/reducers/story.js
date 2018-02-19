@@ -1,7 +1,7 @@
 const INITIAL_STATE = [
     {
         id: 1,
-        title: '長め長め長め長め長め長め長め長め長め長め長め長め長め長め長め',
+        title: 'longlonglonglonglonglonglonglong story Title',
         body: 'text of story1',
         sprintId: null,
         point: 1.0
@@ -32,6 +32,20 @@ const INITIAL_STATE = [
         title: 'ストーリータイトル5',
         body: 'text of story2',
         sprintId: 2,
+        point: 1.0
+    },
+    {
+        id: 6,
+        title: 'Story Title6',
+        body: 'text of story1',
+        sprintId: null,
+        point: 1.0
+    },
+    {
+        id: 7,
+        title: 'Story Title7',
+        body: 'text of story1',
+        sprintId: null,
         point: 1.0
     },
 ];

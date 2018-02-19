@@ -1,2 +1,8 @@
+# React Backlog like Redmine
+
+## Development
+
+```
 npm install
-npm run webpack-dev-server
+npm run dev
+```
