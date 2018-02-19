@@ -15,5 +15,8 @@ module.exports = Merge(CommonConfig, {
 
   plugins: [
     new webpack.HotModuleReplacementPlugin(),
+    new webpack.DefinePlugin({
+      'BASENAME': JSON.stringify('/')
+    })
   ]
 });

@@ -72,8 +72,5 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: './index.html'
     }),
-    new webpack.DefinePlugin({
-      'BASENAME': JSON.stringify('/')
-    })
   ],
 }

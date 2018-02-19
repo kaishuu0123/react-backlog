@@ -6,7 +6,7 @@ module.exports = Merge(CommonConfig, {
   plugins: [
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify('production'),
-      'BASENAME': JSON.stringify('/')
+      'BASENAME': JSON.stringify('/dist')
     }),
     new webpack.optimize.UglifyJsPlugin({
       compress: {
