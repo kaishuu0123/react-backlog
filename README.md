@@ -2,7 +2,7 @@
 
 ## Demo URL
 
-* https://kaishuu0123.github.io/react-backlog-like-redmine/
+* https://kaishuu0123.github.io/react-backlog/
 
 ## Preview
 
