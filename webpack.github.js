@@ -6,7 +6,7 @@ module.exports = Merge(CommonConfig, {
   plugins: [
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify('production'),
-      'BASENAME': JSON.stringify('/react-backlog-like-redmine')
+      'BASENAME': JSON.stringify('/react-backlog')
     }),
     new webpack.optimize.UglifyJsPlugin({
       compress: {
