@@ -4,9 +4,6 @@ import { Ref, Card, Image, Icon, Grid } from 'semantic-ui-react';
 import catPng from '../../images/cat.png';
 import octCatSvg from '../../images/octcat.svg';
 
-import 'semantic-ui-css/semantic.min.css';
-
-
 const taskSource = {
     beginDrag(props) {
         return {

@@ -11,6 +11,8 @@ import Home from './components/home.jsx';
 import Kanban from './components/kanban.jsx';
 import Backlog from './components/backlog.jsx';
 
+import 'semantic-ui-css/semantic.min.css';
+
 document.addEventListener('DOMContentLoaded', () => {
   render(
     <Provider store={store}>

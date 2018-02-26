@@ -23,6 +23,25 @@ class StoryInputDialog extends React.Component {
         }
     }
 
+    componentWillReceiveProps(props) {
+        if (props.story) {
+            const story = props.story;
+            this.setDefaultState(
+                story.title,
+                story.description
+            );
+        }
+    }
+
+    setDefaultState(title, description) {
+
+        // Set state using data.
+        this.setState({
+            title: title,
+            description: description
+        })
+    }
+
     submit() {
         this.props.addStory(
             this.props.sprintId,
@@ -53,7 +72,7 @@ class StoryInputDialog extends React.Component {
         return (
             <Modal dimmer={dimmer} open={open}>
                 <Modal.Header>Story</Modal.Header>
-                <Modal.Content image>
+                <Modal.Content>
                     <Modal.Description>
                     <Form>
                         <Form.Field

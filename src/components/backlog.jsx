@@ -4,10 +4,12 @@ import Header from './header.jsx';
 import {
     Container,
     Grid,
-    Segment,
 } from 'semantic-ui-react';
+import withDragDropContext from '../lib/withDragDropContext';
 import Sprint from './backlogs/sprint.jsx';
 import StoryInputDialog from './backlogs/storyInputDialog.jsx';
+import StoryItemPreview from './backlogs/storyItemPreview.jsx';
+import { changeStorySortOrder } from '../actions/story';
 
 function mapStateToProps(state) {
     return {
@@ -30,24 +32,30 @@ class Backlog extends React.Component {
     }
 
     render() {
+        const { sprints, stories } = this.props;
+        const excludedBacklogSprints = sprints.filter((sprint) => {
+            return sprint.id !== 1;
+        });
+
         return (
             <div>
                 <Header />
                 <Grid columns={2} style={{margin: '1em'}}>
                     <Grid.Column>
-                        {this.props.sprints.map((sprint, index) => (
-                            <Sprint key={index} sprintTitle={sprint.sprintTitle} sprintId={sprint.id} stories={this.getStories(sprint.id)} />
+                        {excludedBacklogSprints.map((sprint, index) => (
+                            <Sprint key={index} sprintTitle={sprint.sprintTitle} sprintId={sprint.id} stories={stories[sprint.id]} />
                         ))}
                     </Grid.Column>
                     <Grid.Column>
-                        <Sprint sprintTitle='Backlogs' stories={this.getStories(null)} />
+                        <Sprint sprintTitle='Backlogs' sprintId={1} stories={stories[1]} />
                     </Grid.Column>
                 </Grid>
-
-                <StoryInputDialog {...this.props.storyInputDialog}/>
+                <StoryInputDialog {...this.props.storyInputDialog} />
+                <StoryItemPreview />
             </div>
         );
     }
 }
 
-export default connect(mapStateToProps, {})(Backlog);
+Backlog = connect(mapStateToProps, { changeStorySortOrder })(Backlog);
+export default withDragDropContext(Backlog);

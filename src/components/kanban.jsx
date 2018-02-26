@@ -3,18 +3,14 @@ import Header from './header.jsx';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 import { Table } from 'semantic-ui-react';
-import HTML5Backend from 'react-dnd-html5-backend';
-import { DragDropContext } from 'react-dnd';
-import { default as TouchBackend } from 'react-dnd-touch-backend';
 
+import withDragDropContext from '../lib/withDragDropContext';
 import KanbanColumn from './kanbans/kanbanColumn.jsx';
 import StoryCard from './kanbans/storyCard.jsx';
 import TaskCard from './kanbans/taskCard.jsx';
 import AddTaskCardButton from './kanbans/addTaskCardButton.jsx';
 import { default as CardPreview } from './kanbans/CardPreview.jsx';
 import { default as CardInputForm } from './kanbans/cardInputForm.jsx';
-
-import 'semantic-ui-css/semantic.min.css';
 
 function mapStateToProps(state) {
     return {
@@ -41,9 +37,7 @@ class Kanban extends React.Component {
     render() {
         const { params } = this.props.match;
 
-        const stories = this.props.stories.filter((story, index) => {
-            return params.sprintId == story.sprintId;
-        });
+        const stories = this.props.stories[params.sprintId];
 
         return(
             <div>
@@ -84,5 +78,5 @@ class Kanban extends React.Component {
     }
 }
 
-Kanban = DragDropContext(TouchBackend({ enableMouseEvents: true }))(Kanban);
+Kanban = withDragDropContext(Kanban);
 export default connect(mapStateToProps)(withRouter(Kanban));
