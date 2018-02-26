@@ -5,8 +5,6 @@ import { changeTaskState } from '../../actions/task';
 
 import { Ref, Table, Card, Image } from 'semantic-ui-react';
 
-import 'semantic-ui-css/semantic.min.css';
-
 const stateTarget = {
     drop(props, monitor, component) {
         props.changeTaskState(

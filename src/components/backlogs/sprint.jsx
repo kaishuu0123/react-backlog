@@ -5,14 +5,14 @@ import {
     Segment,
     Header,
     List,
-    Table,
     Label,
     Button,
     Grid,
     Popup
 } from 'semantic-ui-react';
-import { showStoryInputDialog } from '../../actions/storyInputDialog';
 
+import { showStoryInputDialog } from '../../actions/storyInputDialog';
+import StoryList from './storyList.jsx';
 
 function mapStateToProps (state) {
     return {
@@ -37,7 +37,10 @@ class Sprint extends React.Component {
     }
 
     render() {
-        const { sprintId, sprintTitle, stories } = this.props;
+        const {
+            sprintId, sprintTitle, stories
+        } = this.props;
+
         return (
             <Segment.Group>
                 <Segment color='grey'>
@@ -50,7 +53,7 @@ class Sprint extends React.Component {
                                 <span>2018/01/01 〜 2018/02/02</span>
                             </Grid.Column>
                             <Grid.Column width={3}>
-                                { sprintId &&
+                                { sprintId !== 1 &&
                                     <Popup
                                         trigger={<Button compact size='mini' icon='grid layout' circular floated="right" onClick={this.viewKanban}/>}
                                         content='View Kanban'
@@ -68,23 +71,7 @@ class Sprint extends React.Component {
                     </Grid>
                 </Segment>
                 <Segment style={{padding: '0px'}}>
-                    <List celled　verticalAlign='middle' relaxed>
-                        {
-                            stories.map((story, index) => (
-                                <List.Item key={index}>
-                                    { story.point != null &&  story.point !== 0 &&
-                                        <List.Content floated='right'>
-                                            <Label size='mini' horizontal circular>{story.point}</Label>
-                                        </List.Content>
-                                    }
-                                    <List.Content>
-                                        <Label basic size='mini' horizontal>#{story.id}</Label>
-                                        {story.title}
-                                    </List.Content>
-                                </List.Item>
-                            ))
-                        }
-                    </List>
+                    <StoryList sprintId={sprintId} stories={stories}/>
                 </Segment>
                 <Segment secondary>
                     <Grid columns={3}>

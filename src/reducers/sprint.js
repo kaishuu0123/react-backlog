@@ -1,10 +1,14 @@
 const INITIAL_STATE = [
     {
         id: 1,
-        sprintTitle: 'Sprint-11',
+        sprintTitle: 'Backlog',
     },
     {
         id: 2,
+        sprintTitle: 'Sprint-11',
+    },
+    {
+        id: 3,
         sprintTitle: 'Sprint-12',
     }
 ];

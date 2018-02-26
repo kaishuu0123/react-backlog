@@ -3,28 +3,28 @@ const INITIAL_STATE = [
         storyId: 1,
         id: 3,
         title: 'Task1',
-        body: 'text of Task1',
+        description: 'text of Task1',
         state: 'New'
     },
     {
         storyId: 1,
         id: 4,
         title: 'Task2',
-        body: 'text of Task2',
+        description: 'text of Task2',
         state: 'New'
     },
     {
         storyId: 2,
         id: 5,
         title: '本番デプロイ',
-        body: '本番環境にデプロイする',
+        description: '本番環境にデプロイする',
         state: 'New'
     },
     {
         storyId: 2,
         id: 6,
         title: '結構長め長め長め長め長めのタスク名',
-        body: '本番環境にデプロイする',
+        description: '本番環境にデプロイする',
         state: 'New'
     }
 ]
@@ -51,7 +51,7 @@ export default function (state = INITIAL_STATE, action) {
                 storyId: action.payload.storyId,
                 id: maxId + 1,
                 title: action.payload.taskTitle,
-                body: action.payload.taskDescription,
+                description: action.payload.taskDescription,
                 state: 'New'
             });
             return newState;

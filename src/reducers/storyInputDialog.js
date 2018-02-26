@@ -1,7 +1,8 @@
 const INITIAL_STATE = {
     open: false,
     dimmer: 'inverted',
-    sprintId: null
+    sprintId: null,
+    story: null
 }
 
 export default function (state = INITIAL_STATE, action) {
@@ -10,11 +11,13 @@ export default function (state = INITIAL_STATE, action) {
             return Object.assign({}, state, {
                 open: true,
                 sprintId: action.payload.sprintId,
+                story: action.payload.story
             });
         case 'HIDE_STORY_INPUT_DIALOG':
             return Object.assign({}, state, {
                 open: false,
                 sprintId: action.payload.sprintId,
+                story: null,
             });
         default:
             return state;
