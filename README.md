@@ -6,7 +6,7 @@
 
 ## Preview
 
-![Preview](https://github.com/kaishuu0123/react-backlog-like-redmine/raw/master/backlog-demo.gif)
+![Preview](https://github.com/kaishuu0123/react-backlog/raw/master/backlog-demo.gif)
 
 
 ## Development
