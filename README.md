@@ -1,6 +1,6 @@
 # React Backlog like Redmine
 
-## Demo URL
+## Demo
 
 * https://kaishuu0123.github.io/react-backlog/
 
