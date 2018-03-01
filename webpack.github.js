@@ -4,7 +4,7 @@ const CommonConfig = require('./webpack.config.js');
 
 module.exports = Merge(CommonConfig, {
   output: {
-    publicPath: '/react-backlog',
+    publicPath: '/react-backlog/',
     path: `${__dirname}/dist`,
     filename: 'bundle.js'
   },
