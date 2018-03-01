@@ -1,4 +1,4 @@
-# React Backlog like Redmine
+# React Backlog
 
 ## Demo
 
