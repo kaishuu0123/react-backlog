@@ -9,6 +9,18 @@ export function addStory (sprintId, title, description) {
     }
 }
 
+export function updateStory (sprintId, storyId, title, description) {
+    return {
+        type: 'UPDATE_STORY',
+        payload: {
+            sprintId: sprintId,
+            storyId: storyId,
+            title: title,
+            description: description
+        }
+    }
+}
+
 export function changeStorySortOrder (srcStoryId, dstStoryId, dragIndex, hoverIndex) {
     return {
         type: 'CHANGE_STORY_SORT_ORDER',

@@ -22,7 +22,7 @@ class Header extends React.Component {
     render() {
         return (
             <div>
-                <Menu inverted>
+                <Menu inverted fixed='top'>
                     <Menu.Item header>Kanboard</Menu.Item>
                     <Menu.Item exact as={NavLink} to="/">Home</Menu.Item>
                     <Menu.Item as={NavLink} to="/backlog">Backlog</Menu.Item>

@@ -1,9 +1,9 @@
-function changeStateSuccess(storyId, taskId, afterState, index) {
+function changeStateSuccess(newStoryId, task, afterState, index) {
     return {
         type: 'TASK_STATE_CHANGED',
         payload: {
-            storyId: storyId,
-            taskId: taskId,
+            newStoryId: newStoryId,
+            task: task,
             afterState: afterState,
             index: index
         }
@@ -34,5 +34,29 @@ export function addTask(storyId, taskTitle, taskDescription) {
         return (
             dispatch(addTaskSuccess(storyId, taskTitle, taskDescription))
         );
+    }
+}
+
+export function changeTaskSortOrder (srcTask, dstTask, status, dragIndex, hoverIndex) {
+    return {
+        type: 'CHANGE_TASK_SORT_ORDER',
+        payload: {
+            srcTask: srcTask,
+            dstTask: dstTask,
+            status: status,
+            dragIndex: dragIndex,
+            hoverIndex: hoverIndex,
+        }
+    }
+}
+
+export function attachToStatusColumn (srcTask, srcTaskIndex, dstColumn) {
+    return {
+        type: 'ATTACH_TO_STATUS_COLUMN',
+        payload: {
+            srcTask: srcTask,
+            srcTaskIndex: srcTaskIndex,
+            dstColumn: dstColumn,
+        }
     }
 }

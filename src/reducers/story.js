@@ -40,7 +40,7 @@ const INITIAL_STATE = {
             id: 3,
             title: 'ストーリータイトル3',
             description: 'text of story2',
-            sprint: 2,
+            sprintId: 2,
             point: 5.0
         },
     ],
@@ -83,6 +83,24 @@ export default function (state = INITIAL_STATE, action) {
                     description: description,
                     sprintId: sprintId,
                     point: null
+                })
+            }
+        }
+        case 'UPDATE_STORY': {
+            const { sprintId, storyId, title, description } = action.payload;
+            const newState = Object.assign({}, state);
+
+            return {
+                ...state,
+                [sprintId]: newState[sprintId].map((story) => {
+                    if (story.id === storyId) {
+                        return {
+                            ...story,
+                            title: title,
+                            description: description
+                        }
+                    }
+                    return { ...story }
                 })
             }
         }

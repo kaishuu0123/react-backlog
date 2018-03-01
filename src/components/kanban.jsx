@@ -1,8 +1,8 @@
 import React from 'react';
-import Header from './header.jsx';
+import GlobalHeader from './header.jsx';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
-import { Table } from 'semantic-ui-react';
+import { Header, Table, Container, Button } from 'semantic-ui-react';
 
 import withDragDropContext from '../lib/withDragDropContext';
 import KanbanColumn from './kanbans/kanbanColumn.jsx';
@@ -14,6 +14,7 @@ import { default as CardInputForm } from './kanbans/cardInputForm.jsx';
 
 function mapStateToProps(state) {
     return {
+        sprint: state.sprint,
         tasks: state.task,
         stories: state.story,
         cardInputForm: state.cardInputForm,
@@ -24,7 +25,7 @@ class Kanban extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            states: [
+            statuses: [
                 'New',
                 'In Progress',
                 'Resolved',
@@ -38,41 +39,60 @@ class Kanban extends React.Component {
         const { params } = this.props.match;
 
         const stories = this.props.stories[params.sprintId];
+        const {
+            tasks, sprint
+        } = this.props;
+        const {
+            statuses
+        } = this.state;
+
+        const entry = sprint.find((entry) => {
+            return Number(params.sprintId) === entry.id
+        });
+        const sprintTitle = entry.sprintTitle;
+
+        const columnWidth = parseInt(16 / (statuses.length + 1));
+        const get = (p, o) => p.reduce((xs, x) => (xs && xs[x]) ? xs[x] : null, o)
 
         return(
             <div>
-                <Header />
-                <Table celled size='small' unstackable attached='top'>
-                    <Table.Header>
-                        <Table.Row>
-                            <Table.HeaderCell style={{width: '200px'}} />
-                            {this.state.states.map((state, index) => (
-                                <Table.HeaderCell key={index} style={{width: '200px'}}>{state}</Table.HeaderCell>
-                            ))}
-                        </Table.Row>
-                    </Table.Header>
-                    <Table.Body>
-                        {stories.map((story, index) => (
-                            <Table.Row key={index} verticalAlign='top'>
-                                <Table.Cell>
-                                    <StoryCard key={index} story={story} index={index} />
-                                    <AddTaskCardButton storyId={story.id}/>
-                                </Table.Cell>
-                                {this.state.states.map((state, index) => (
-                                    <KanbanColumn key={index} state={state} storyId={story.id}>
-                                        {this.props.tasks.filter((task) => task.state == state && task.storyId == story.id).map((task, index) => (
-                                            <TaskCard key={index} task={task} index={index} />
-                                        ))}
-                                        {index == 0 &&
-                                            <CardInputForm {...this.props.cardInputForm} storyId={story.id} />
-                                        }
-                                    </KanbanColumn>
+                <GlobalHeader />
+                <div style={{margin: '1em', marginTop: '4em'}}>
+                    <Header as='h1' dividing>
+                        {sprintTitle}
+                    </Header>
+                    <Table celled size='small' unstackable attached='top'>
+                        <Table.Header>
+                            <Table.Row>
+                                <Table.HeaderCell width={columnWidth} />
+                                {statuses.map((status, index) => (
+                                    <Table.HeaderCell key={index} width={columnWidth}>{status}</Table.HeaderCell>
                                 ))}
                             </Table.Row>
-                        ))}
-                    </Table.Body>
-                </Table>
-                <CardPreview key="__preview" />
+                        </Table.Header>
+                        <Table.Body>
+                            {stories.map((story, index) => (
+                                <Table.Row key={index} verticalAlign='top'>
+                                    <Table.Cell>
+                                        <StoryCard key={index} story={story} index={index} />
+                                        <AddTaskCardButton storyId={story.id}/>
+                                    </Table.Cell>
+                                    {statuses.map((status, index) => (
+                                        <KanbanColumn key={index} status={status} storyId={story.id} tasks={(get([story.id, status], tasks) || []).filter((task) => task.status === status)}>
+                                            {(get([story.id, status], tasks) || []).filter((task) => task.status === status).map((task, index) => (
+                                                <TaskCard key={index} task={task} index={index} status={status} />
+                                            ))}
+                                            {index == 0 &&
+                                                <CardInputForm {...this.props.cardInputForm} storyId={story.id} />
+                                            }
+                                        </KanbanColumn>
+                                    ))}
+                                </Table.Row>
+                            ))}
+                        </Table.Body>
+                    </Table>
+                    <CardPreview key="__preview" />
+                </div>
             </div>
         )
     }

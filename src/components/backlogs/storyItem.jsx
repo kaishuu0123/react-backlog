@@ -66,20 +66,6 @@ const storyTarget = {
 			return
         }
 
-        // // Dragging downwards
-		// if (hoverClientY < hoverMiddleY) {
-        //     props.setState({
-        //         overDirection: 'downwards'
-        //     });
-		// }
-
-		// // Dragging upwards
-		// if (hoverClientY > hoverMiddleY) {
-        //     props.setState({
-        //         overDirection: 'upwards'
-        //     });
-        // }
-
         // Time to actually perform the action
 		props.changeStorySortOrder(srcStory.id, dstStory.id, dragIndex, hoverIndex)
 
@@ -113,18 +99,7 @@ class StoryItem extends React.Component {
     constructor(props) {
         super(props);
 
-        this.state = {
-            overDirection: 'none'
-        };
-
-        this.setOverDirection = this.setOverDirection.bind(this);
         this.showDialog = this.showDialog.bind(this);
-    }
-
-    setOverDirection(direction) {
-        this.setState({
-            overDirection: direction
-        });
     }
 
     renderOverlay(color) {
@@ -153,9 +128,6 @@ class StoryItem extends React.Component {
             connectDragSource, isDragging,
             connectDropTarget, isOver, clientOffset, sourceClientOffset
         } = this.props;
-        const {
-            overDirection
-        } = this.state;
 
         return (
             connectDragSource(connectDropTarget(

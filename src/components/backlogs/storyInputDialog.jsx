@@ -1,8 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Popup, Button, Header, Image, Modal, Form, Input, TextArea } from 'semantic-ui-react'
+import { Ref, Popup, Button, Header, Image, Modal, Form, Input, TextArea } from 'semantic-ui-react'
 import { hideStoryInputDialog } from '../../actions/storyInputDialog';
-import { addStory } from '../../actions/story';
+import { addStory, updateStory } from '../../actions/story';
 
 function mapStateToProps(state) {
     return {
@@ -34,7 +34,6 @@ class StoryInputDialog extends React.Component {
     }
 
     setDefaultState(title, description) {
-
         // Set state using data.
         this.setState({
             title: title,
@@ -43,11 +42,20 @@ class StoryInputDialog extends React.Component {
     }
 
     submit() {
-        this.props.addStory(
-            this.props.sprintId,
-            this.state.title,
-            this.state.description
-        );
+        if (this.props.story) {
+            this.props.updateStory(
+                this.props.sprintId,
+                this.props.story.id,
+                this.state.title,
+                this.state.description
+            );
+        } else {
+            this.props.addStory(
+                this.props.sprintId,
+                this.state.title,
+                this.state.description
+            );
+        }
 
         this.clear();
         this.props.hideStoryInputDialog();
@@ -65,6 +73,10 @@ class StoryInputDialog extends React.Component {
         });
     }
 
+    handleRef(element) {
+        element.querySelector('input').focus()
+    }
+
     render() {
         const { title, description } = this.state;
         const { open, dimmer, sprintId } = this.props;
@@ -75,13 +87,17 @@ class StoryInputDialog extends React.Component {
                 <Modal.Content>
                     <Modal.Description>
                     <Form>
-                        <Form.Field
-                            id='form-input-control-story-title'
-                            control={Input}
-                            label='Title'
-                            placeholder='Title'
-                            onChange={(e) => this.setState({title: e.target.value})}
-                            value={title} />
+                        <Ref
+                            innerRef={this.handleRef}
+                        >
+                            <Form.Field
+                                id='form-input-control-story-title'
+                                control={Input}
+                                label='Title'
+                                placeholder='Title'
+                                onChange={(e) => this.setState({title: e.target.value})}
+                                value={title} />
+                        </Ref>
                         <Form.Field
                             id='form-textarea-control-description'
                             control={TextArea}
@@ -103,4 +119,4 @@ class StoryInputDialog extends React.Component {
     }
 }
 
-export default connect(mapStateToProps, { hideStoryInputDialog, addStory })(StoryInputDialog);
+export default connect(mapStateToProps, { hideStoryInputDialog, addStory, updateStory })(StoryInputDialog);

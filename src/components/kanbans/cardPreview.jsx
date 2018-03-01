@@ -3,7 +3,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import DragLayer from 'react-dnd/lib/DragLayer';
-import TaskCard from './taskCard.jsx';
+import { Ref, Card, Image, Icon, Grid } from 'semantic-ui-react';
+import octCatSvg from '../../images/octcat.svg';
 
 const layerStyles = {
     position: 'fixed',
@@ -45,8 +46,26 @@ function getItemStyles (props) {
 
 class CardPreview extends React.Component {
     renderItem(type, item) {
+        const task = item.task;
         return (
-            <TaskCard task={item.task} key={0} index={0}></TaskCard>
+            <Card key={0}>
+                <Card.Content>
+                    <span className="right floated">
+                        <Icon name="edit"/>
+                    </span>
+                    <Card.Header style={{fontWeight: '100', fontSize: '0.9em', color: 'rgba(0,0,0,.68)'}}>#{task.id}</Card.Header>
+                    <Card.Description style={{fontWeight: '500', fontSize: '1.1em', color: 'rgba(0,0,0,255)'}}>{task.title}</Card.Description>
+                </Card.Content>
+                <Card.Content extra>
+                    <Image size='mini' style={{width:'20px', height:'20px', margin: '0px'}} src={octCatSvg} />
+                    <span className="right floated">
+                        <Icon name="file text outline" />
+                        2
+                        <Icon name="comment outline" />
+                        1
+                    </span>
+                </Card.Content>
+            </Card>
         );
     }
 
@@ -54,7 +73,7 @@ class CardPreview extends React.Component {
         const { item, itemType, isDragging } = this.props
 
         if (!isDragging) {
-            return <div />;
+            return null;
         }
 
         return (

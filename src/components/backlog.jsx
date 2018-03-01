@@ -1,9 +1,10 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import Header from './header.jsx';
+import GlobalHeader from './header.jsx';
 import {
     Container,
     Grid,
+    Header
 } from 'semantic-ui-react';
 import withDragDropContext from '../lib/withDragDropContext';
 import Sprint from './backlogs/sprint.jsx';
@@ -39,19 +40,24 @@ class Backlog extends React.Component {
 
         return (
             <div>
-                <Header />
-                <Grid columns={2} style={{margin: '1em'}}>
-                    <Grid.Column>
-                        {excludedBacklogSprints.map((sprint, index) => (
-                            <Sprint key={index} sprintTitle={sprint.sprintTitle} sprintId={sprint.id} stories={stories[sprint.id]} />
-                        ))}
-                    </Grid.Column>
-                    <Grid.Column>
-                        <Sprint sprintTitle='Backlogs' sprintId={1} stories={stories[1]} />
-                    </Grid.Column>
-                </Grid>
-                <StoryInputDialog {...this.props.storyInputDialog} />
-                <StoryItemPreview />
+                <GlobalHeader />
+                <div style={{margin: '1em', marginTop: '4em'}}>
+                    <Header as='h1' dividing>
+                        Backlog
+                    </Header>
+                    <Grid columns={2}>
+                        <Grid.Column>
+                            {excludedBacklogSprints.map((sprint, index) => (
+                                <Sprint key={index} sprintTitle={sprint.sprintTitle} sprintId={sprint.id} stories={stories[sprint.id]} />
+                            ))}
+                        </Grid.Column>
+                        <Grid.Column>
+                            <Sprint sprintTitle='Backlogs' sprintId={1} stories={stories[1]} />
+                        </Grid.Column>
+                    </Grid>
+                    <StoryInputDialog {...this.props.storyInputDialog} />
+                    <StoryItemPreview />
+                </div>
             </div>
         );
     }

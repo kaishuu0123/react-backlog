@@ -6,7 +6,7 @@ import octCatSvg from '../../images/octcat.svg';
 class StoryCard extends React.Component {
     render() {
         return(
-            <Card key={this.props.index} style={{borderLeft: '2px solid blue'}}>
+            <Card key={this.props.index} style={{width: 'auto', borderLeft: '2px solid blue'}}>
                 <Card.Content>
                     <span className="right floated">
                         <Icon name="edit"/>

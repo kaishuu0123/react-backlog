@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Form, Card, Icon, Button, Modal, Header, Input, TextArea } from 'semantic-ui-react';
+import { Ref, Form, Card, Icon, Button, Modal, Header, Input, TextArea } from 'semantic-ui-react';
 import { addTask } from '../../actions/task';
 import { addCardInputForm, hideCardInputForm } from '../../actions/cardInputForm';
 
@@ -79,9 +79,15 @@ class CardInputForm extends React.Component {
         });
     }
 
+    handleRef(element) {
+        element.focus()
+    }
+
     render() {
         const { taskTitle, taskDescription } = this.state;
         const { open } = this.props;
+
+        const ref = open ? this.handleRef : null;
 
         return (
             <div onBlur={this.onBlur}>
@@ -89,6 +95,7 @@ class CardInputForm extends React.Component {
                     <Card.Content>
                         <Card.Header style={{width: '100%'}}>
                             <Input
+                                ref={ref}
                                 placeholder='Title'
                                 style={{width: '100%'}}
                                 onChange={(e) => this.setState({taskTitle: e.target.value})}

@@ -8,12 +8,6 @@ module.exports = {
     app: './src/index.jsx'
   },
 
-  output: {
-    publicPath: '',
-    path: `${__dirname}/dist`,
-    filename: 'bundle.js'
-  },
-
   module: {
     loaders: [
       {

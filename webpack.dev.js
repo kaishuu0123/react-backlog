@@ -13,10 +13,16 @@ module.exports = Merge(CommonConfig, {
     inline: true
   },
 
+  output: {
+    publicPath: '/',
+    path: `${__dirname}/dist`,
+    filename: 'bundle.js'
+  },
+
   plugins: [
     new webpack.HotModuleReplacementPlugin(),
     new webpack.DefinePlugin({
-      'BASENAME': JSON.stringify('/')
+      'BASENAME': JSON.stringify('')
     })
   ]
 });
