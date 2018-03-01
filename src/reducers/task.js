@@ -56,7 +56,7 @@ export default function (state = INITIAL_STATE, action) {
             });
 
             if (!(storyId in newState)) {
-                newState[storyId] = [];
+                newState[storyId] = { 'New': [] };
             }
 
             newState[storyId]['New'].push({
