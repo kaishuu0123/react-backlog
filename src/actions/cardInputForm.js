@@ -1,28 +1,20 @@
-export function addCardInputForm(storyId) {
-    return {
-        type: 'ADD_CARD_INPUT_FORM',
-        payload: {
-            storyId: storyId,
-            open: true
-        }
-    }
-}
-
-export function showCardInputForm(storyId) {
+export function showCardInputForm(storyId, task) {
     return {
         type: 'SHOW_CARD_INPUT_FORM',
         payload: {
             storyId: storyId,
+            task: task,
             open: true
         }
     }
 }
 
-export function hideCardInputForm(storyId) {
+export function hideCardInputForm(storyId, task) {
     return {
         type: 'HIDE_CARD_INPUT_FORM',
         payload: {
             storyId: storyId,
+            task: task,
             open: false
         }
     }

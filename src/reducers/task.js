@@ -30,7 +30,7 @@ const INITIAL_STATE = {
                 storyId: 2,
                 id: 6,
                 title: '結構長め長め長め長め長めのタスク名',
-                description: '本番環境にデプロイする',
+                description: '結構長め長め長め長め長めのタスク名',
                 status: 'New'
             }
         ]
@@ -76,12 +76,34 @@ export default function (state = INITIAL_STATE, action) {
                 }
             };
         }
+        case 'UPDATE_TASK': {
+            const newState = Object.assign({}, state);
+            const { storyId, task, title, description } = action.payload;
+            const taskId = task.id;
+
+            return {
+                ...state,
+                [storyId]: {
+                    [task.status]: newState[storyId][task.status].map((task) => {
+                        if (task.id === taskId) {
+                            return {
+                                ...task,
+                                title: title,
+                                description: description
+                            }
+                        }
+                        return { ...task }
+                    })
+                }
+            }
+        }
         case 'CHANGE_TASK_SORT_ORDER': {
             const { srcTask, dstTask, status, dragIndex, hoverIndex } = action.payload;
             const newState = Object.assign({}, state);
 
             const srcStoryId = srcTask.storyId;
             const dstStoryId = dstTask.storyId;
+            const prevStatus = srcTask.status;
 
             if (srcStoryId !== dstStoryId) {
                 const srcTasks = (get([srcStoryId, srcTask.status], newState) || []);
@@ -94,7 +116,7 @@ export default function (state = INITIAL_STATE, action) {
                 return {
                     ...state,
                     [srcStoryId]: {
-                        [srcTask.status]: [
+                        [prevStatus]: [
                             ...srcTasks
                         ],
                         ...state[srcStoryId]
@@ -114,7 +136,7 @@ export default function (state = INITIAL_STATE, action) {
                 return {
                     ...state,
                     [srcStoryId]: {
-                        [srcTask.status]: [
+                        [prevStatus]: [
                             ...newState[srcStoryId][status]
                         ],
                         ...state[srcStoryId]
@@ -127,6 +149,7 @@ export default function (state = INITIAL_STATE, action) {
             const newState = Object.assign({}, state);
 
             const srcStoryId = srcTask.storyId;
+            const prevStatus = srcTask.status;
 
             const srcTasks = (get([srcStoryId, srcTask.status], newState) || []);
             const dstTasks = (get([dstColumn.storyId, dstColumn.status], newState) || []);
@@ -138,7 +161,7 @@ export default function (state = INITIAL_STATE, action) {
             return {
                 ...state,
                 [srcStoryId]: {
-                    [srcTask.status]: [
+                    [prevStatus]: [
                         ...srcTasks
                     ],
                     ...state[srcStoryId]

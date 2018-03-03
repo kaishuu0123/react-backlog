@@ -41,6 +41,11 @@ class Sprint extends React.Component {
             sprintId, sprintTitle, stories
         } = this.props;
 
+        const totalStoryCount = stories.length;
+        const totalStoryPoint = stories.map((story) => (story.point || 0)).reduce((prevPoint, curPoint) => {
+            return prevPoint + curPoint;
+        }, 0);
+
         return (
             <Segment.Group>
                 <Segment color='grey'>
@@ -80,10 +85,10 @@ class Sprint extends React.Component {
                                 Total
                             </Grid.Column>
                             <Grid.Column textAlign='right'>
-                            3 Stories
+                                {totalStoryCount} Stories
                             </Grid.Column>
                             <Grid.Column textAlign='right'>
-                            10 points
+                                {totalStoryPoint} points
                             </Grid.Column>
                         </Grid.Row>
                     </Grid>

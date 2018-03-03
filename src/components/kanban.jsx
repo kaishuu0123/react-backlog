@@ -82,15 +82,13 @@ class Kanban extends React.Component {
                                             {(get([story.id, status], tasks) || []).filter((task) => task.status === status).map((task, index) => (
                                                 <TaskCard key={index} task={task} index={index} status={status} />
                                             ))}
-                                            {index == 0 &&
-                                                <CardInputForm {...this.props.cardInputForm} storyId={story.id} />
-                                            }
                                         </KanbanColumn>
                                     ))}
                                 </Table.Row>
                             ))}
                         </Table.Body>
                     </Table>
+                    <CardInputForm {...this.props.cardInputForm} />
                     <CardPreview key="__preview" />
                 </div>
             </div>

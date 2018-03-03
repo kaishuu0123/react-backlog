@@ -1,32 +1,27 @@
-const INITIAL_STATE = [
-]
+const INITIAL_STATE = {
+    open: false,
+    dimmer: 'inverted',
+    storyId: null,
+    task: null
+}
 
 export default function (state = INITIAL_STATE, action) {
     let newState;
     let entry;
 
     switch(action.type) {
-        case 'ADD_CARD_INPUT_FORM':
-            return state.concat([
-                {
-                    storyId: action.payload.storyId,
-                    open: false,
-                }
-            ])
         case 'SHOW_CARD_INPUT_FORM':
-            newState = [...state];
-            entry = newState.find(function(entry, index) {
-                return (entry.storyId === action.payload.storyId);
+            return Object.assign({}, state, {
+                open: true,
+                storyId: action.payload.storyId,
+                task: action.payload.task
             });
-            entry.open = true;
-            return newState
         case 'HIDE_CARD_INPUT_FORM':
-            newState = [...state];
-            entry = newState.find(function(entry, index) {
-                return (entry.storyId === action.payload.storyId);
+            return Object.assign({}, state, {
+                open: false,
+                storyId: action.payload.storyId,
+                task: action.payload.task
             });
-            entry.open = false;
-            return newState
         default:
             return state;
     }

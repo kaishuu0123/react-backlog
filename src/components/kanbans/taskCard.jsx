@@ -6,6 +6,7 @@ import { Ref, Card, Image, Icon, Grid } from 'semantic-ui-react';
 import catPng from '../../images/cat.png';
 import octCatSvg from '../../images/octcat.svg';
 import { changeTaskSortOrder } from '../../actions/task';
+import { showCardInputForm } from '../../actions/cardInputForm';
 
 function mapStateToProps() {
     return {
@@ -107,6 +108,8 @@ function taskTargetCollect(connect, monitor) {
 class TaskCard extends React.Component {
     constructor(props) {
         super(props)
+
+        this.showDialog = this.showDialog.bind(this);
     }
 
     renderOverlay(color) {
@@ -122,6 +125,11 @@ class TaskCard extends React.Component {
 
     displayStyle(isDragging) {
         return isDragging ? { display: 'none' } : { display : 'block' };
+    }
+
+    showDialog() {
+        const { task } = this.props;
+        this.props.showCardInputForm(this.props.storyId, task);
     }
 
     render() {
@@ -144,13 +152,10 @@ class TaskCard extends React.Component {
 
         return(
             connectDragSource(connectDropTarget(
-                <div>
+                <div onClick={this.showDialog}>
                     { isOver && this.renderOverlay('gray') }
                     <Card key={index} style={cardStyle}>
                         <Card.Content style={this.displayStyle(isDragging)}>
-                            <span className="right floated">
-                                <Icon name="edit"/>
-                            </span>
                             <Card.Header style={{fontWeight: '100', fontSize: '0.9em', color: 'rgba(0,0,0,.68)'}}>#{task.id}</Card.Header>
                             <Card.Description style={{fontWeight: '500', fontSize: '1.1em', color: 'rgba(0,0,0,255)'}}>{task.title}</Card.Description>
                         </Card.Content>
@@ -172,4 +177,4 @@ class TaskCard extends React.Component {
 
 TaskCard = DragSource('task', taskSource, taskSourceCollect)(TaskCard);
 TaskCard = DropTarget('task', taskTarget, taskTargetCollect)(TaskCard);
-export default connect(mapStateToProps, { changeTaskSortOrder })(TaskCard);
+export default connect(mapStateToProps, { changeTaskSortOrder, showCardInputForm })(TaskCard);

@@ -60,3 +60,15 @@ export function attachToStatusColumn (srcTask, srcTaskIndex, dstColumn) {
         }
     }
 }
+
+export function updateTask(storyId, task, title, description) {
+    return {
+        type: 'UPDATE_TASK',
+        payload: {
+            storyId: storyId,
+            task: task,
+            title: title,
+            description: description
+        }
+    }
+}

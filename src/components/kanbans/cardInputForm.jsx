@@ -1,22 +1,11 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Ref, Form, Card, Icon, Button, Modal, Header, Input, TextArea } from 'semantic-ui-react';
-import { addTask } from '../../actions/task';
-import { addCardInputForm, hideCardInputForm } from '../../actions/cardInputForm';
+import { addTask, updateTask } from '../../actions/task';
+import { hideCardInputForm } from '../../actions/cardInputForm';
 
 const mapStateToProps = (state, props) => {
-    const entry = state.cardInputForm.find((entry, index) => {
-        return (entry.storyId === props.storyId);
-    });
-
-    if (entry) {
-        return {
-            open: entry.open
-        };
-    }
-
     return {
-        open: false
     };
 };
 
@@ -30,14 +19,31 @@ class CardInputForm extends React.Component {
         this.clearForm = this.clearForm.bind(this);
 
         this.state = {
-            taskTitle: '',
-            taskDescription: ''
+            title: '',
+            description: ''
         }
+    }
 
-        this.props.addCardInputForm(this.props.storyId);
+    componentWillReceiveProps(props) {
+        if (props.task) {
+            const task = props.task;
+            this.setDefaultState(
+                task.title,
+                task.description
+            );
+        }
+    }
+
+    setDefaultState(title, description) {
+        // Set state using data.
+        this.setState({
+            title: title,
+            description: description
+        })
     }
 
     close() {
+        this.clearForm()
         this.props.hideCardInputForm(this.props.storyId);
     }
 
@@ -48,8 +54,8 @@ class CardInputForm extends React.Component {
         setTimeout(() => {
             if (!currentTarget.contains(document.activeElement)) {
                 this.setState({
-                    taskTitle: '',
-                    taskDescription: ''
+                    title: '',
+                    description: ''
                 });
                 this.props.hideCardInputForm(this.props.storyId);
             }
@@ -57,11 +63,20 @@ class CardInputForm extends React.Component {
     }
 
     onSubmit() {
-        this.props.addTask(
-            this.props.storyId,
-            this.state.taskTitle,
-            this.state.taskDescription
-        )
+        if (this.props.task) {
+            this.props.updateTask(
+                this.props.task.storyId,
+                this.props.task,
+                this.state.title,
+                this.state.description
+            );
+        } else {
+            this.props.addTask(
+                this.props.storyId,
+                this.state.title,
+                this.state.description
+            )
+        }
 
         this.clearForm()
         this.props.hideCardInputForm(this.props.storyId);
@@ -74,51 +89,59 @@ class CardInputForm extends React.Component {
 
     clearForm() {
         this.setState({
-            taskTitle: '',
-            taskDescription: ''
+            title: '',
+            description: ''
         });
     }
 
     handleRef(element) {
-        element.focus()
+        element.querySelector('input').focus()
     }
 
     render() {
-        const { taskTitle, taskDescription } = this.state;
-        const { open } = this.props;
+        const { title, description } = this.state;
+        const { dimmer, open } = this.props;
 
         const ref = open ? this.handleRef : null;
 
         return (
             <div onBlur={this.onBlur}>
-                <Card style={open ? {} : { display: 'none' }}>
-                    <Card.Content>
-                        <Card.Header style={{width: '100%'}}>
-                            <Input
-                                ref={ref}
-                                placeholder='Title'
-                                style={{width: '100%'}}
-                                onChange={(e) => this.setState({taskTitle: e.target.value})}
-                                value={taskTitle} />
-                        </Card.Header>
-                        <Card.Description style={{width: '100%'}}>
-                            <Form>
-                                <TextArea
-                                    placeholder='Description'
-                                    style={{width: '100%'}}
-                                    onChange={(e) => this.setState({taskDescription: e.target.value})}
-                                    value={taskDescription} />
-                            </Form>
-                        </Card.Description>
-                    </Card.Content>
-                    <Card.Content extra>
-                        <Button compact size="small" color='blue' onClick={this.onSubmit}>Submit</Button>
-                        <Button compact size="small" color='grey' onClick={this.onCancel}>Cancel</Button>
-                    </Card.Content>
-                </Card>
+                <Modal dimmer={dimmer} open={open} onClose={this.close}>
+                    <Modal.Header>Task</Modal.Header>
+                    <Modal.Content>
+                        <Modal.Description>
+                        <Form>
+                            <Ref
+                                innerRef={this.handleRef}
+                            >
+                                <Form.Field
+                                    id='form-input-control-story-title'
+                                    control={Input}
+                                    label='Title'
+                                    placeholder='Title'
+                                    onChange={(e) => this.setState({title: e.target.value})}
+                                    value={title} />
+                            </Ref>
+                            <Form.Field
+                                id='form-textarea-control-description'
+                                control={TextArea}
+                                label='Description'
+                                placeholder='Description'
+                                onChange={(e) => this.setState({description: e.target.value})}
+                                value={description} />
+                        </Form>
+                        </Modal.Description>
+                    </Modal.Content>
+                    <Modal.Actions>
+                        <Button compact color='blue' content="Add Task" onClick={this.onSubmit} />
+                        <Button compact color='grey' onClick={this.close}>
+                        Cancel
+                        </Button>
+                    </Modal.Actions>
+                </Modal>
             </div>
         );
     }
 }
 
-export default connect(mapStateToProps, { addTask, addCardInputForm, hideCardInputForm })(CardInputForm);
+export default connect(mapStateToProps, { addTask, updateTask, hideCardInputForm })(CardInputForm);

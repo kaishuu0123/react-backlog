@@ -8,9 +8,6 @@ class StoryCard extends React.Component {
         return(
             <Card key={this.props.index} style={{width: 'auto', borderLeft: '2px solid blue'}}>
                 <Card.Content>
-                    <span className="right floated">
-                        <Icon name="edit"/>
-                    </span>
                     <Card.Header style={{fontWeight: '100', fontSize: '0.9em', color: 'rgba(0,0,0,.68)'}}>#{this.props.story.id}</Card.Header>
                     <Card.Description style={{fontWeight: '500', fontSize: '1.1em', color: 'rgba(0,0,0,255)', wordWrap: 'break-word'}}>{this.props.story.title}</Card.Description>
                 </Card.Content>
