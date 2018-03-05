@@ -87,21 +87,33 @@ export default function (state = INITIAL_STATE, action) {
             }
         }
         case 'UPDATE_STORY': {
-            const { sprintId, storyId, title, description } = action.payload;
+            const { sprintId, story, title, description } = action.payload;
             const newState = Object.assign({}, state);
 
             return {
                 ...state,
-                [sprintId]: newState[sprintId].map((story) => {
-                    if (story.id === storyId) {
+                [sprintId]: newState[sprintId].map((item) => {
+                    if (story.id === item.id) {
                         return {
-                            ...story,
+                            ...item,
                             title: title,
                             description: description
                         }
                     }
-                    return { ...story }
+                    return { ...item }
                 })
+            }
+        }
+        case 'DELETE_STORY': {
+            const { story } = action.payload;
+            const newState = Object.assign({}, state);
+
+            newState[story.sprintId] = newState[story.sprintId].filter((item) => {
+                return story !== item;
+            });
+
+            return {
+                ...newState,
             }
         }
         case 'CHANGE_STORY_SORT_ORDER': {

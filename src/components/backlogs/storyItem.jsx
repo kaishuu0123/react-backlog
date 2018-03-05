@@ -8,7 +8,7 @@ import {
     Ref,
 } from 'semantic-ui-react';
 import { changeStorySortOrder } from '../../actions/story';
-import { showStoryInputDialog } from '../../actions/storyInputDialog';
+import { showCardInputForm } from '../../actions/cardInputForm';
 
 function mapStateToProps(state) {
     return {
@@ -119,7 +119,7 @@ class StoryItem extends React.Component {
 
     showDialog() {
         const { story } = this.props;
-        this.props.showStoryInputDialog(story.sprintId, story)
+        this.props.showCardInputForm(false, story, 'story', story.sprintId)
     }
 
     render() {
@@ -149,4 +149,4 @@ class StoryItem extends React.Component {
 }
 StoryItem = DragSource('story', storySource, storyCollectSource)(StoryItem);
 StoryItem = DropTarget('story', storyTarget, storyCollectTarget)(StoryItem);
-export default connect(mapStateToProps, { changeStorySortOrder, showStoryInputDialog })(StoryItem);
+export default connect(mapStateToProps, { changeStorySortOrder, showCardInputForm })(StoryItem);

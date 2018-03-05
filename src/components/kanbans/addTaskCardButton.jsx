@@ -13,7 +13,7 @@ class AddTaskCardButton extends React.Component {
     }
 
     show(dimmer) {
-        this.props.showCardInputForm(this.props.storyId);
+        this.props.showCardInputForm(true, null, 'task', this.props.storyId);
     }
 
     render() {

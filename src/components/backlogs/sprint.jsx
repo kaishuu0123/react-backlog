@@ -11,7 +11,7 @@ import {
     Popup
 } from 'semantic-ui-react';
 
-import { showStoryInputDialog } from '../../actions/storyInputDialog';
+import { showCardInputForm } from '../../actions/cardInputForm';
 import StoryList from './storyList.jsx';
 
 function mapStateToProps (state) {
@@ -29,7 +29,7 @@ class Sprint extends React.Component {
     }
 
     showDialog() {
-        this.props.showStoryInputDialog(this.props.sprintId);
+        this.props.showCardInputForm(true, null, 'story', this.props.sprintId);
     }
 
     viewKanban() {
@@ -98,4 +98,4 @@ class Sprint extends React.Component {
     }
 }
 
-export default connect(mapStateToProps, { showStoryInputDialog })(withRouter(Sprint));
+export default connect(mapStateToProps, { showCardInputForm })(withRouter(Sprint));

@@ -129,7 +129,7 @@ class TaskCard extends React.Component {
 
     showDialog() {
         const { task } = this.props;
-        this.props.showCardInputForm(this.props.storyId, task);
+        this.props.showCardInputForm(false, task, 'task', task.storyId);
     }
 
     render() {

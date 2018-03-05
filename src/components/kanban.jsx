@@ -10,7 +10,7 @@ import StoryCard from './kanbans/storyCard.jsx';
 import TaskCard from './kanbans/taskCard.jsx';
 import AddTaskCardButton from './kanbans/addTaskCardButton.jsx';
 import { default as CardPreview } from './kanbans/CardPreview.jsx';
-import { default as CardInputForm } from './kanbans/cardInputForm.jsx';
+import { default as CardInputForm } from './common/cardInputForm.jsx';
 
 function mapStateToProps(state) {
     return {

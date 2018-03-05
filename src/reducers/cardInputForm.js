@@ -1,27 +1,47 @@
 const INITIAL_STATE = {
     open: false,
     dimmer: 'inverted',
-    storyId: null,
-    task: null
+    card: null,
+    isEdit: false,
+    isNew: true,
+    mode: 'story',
+    openConfirm: false,
+    parentId: null
 }
 
 export default function (state = INITIAL_STATE, action) {
-    let newState;
-    let entry;
-
     switch(action.type) {
-        case 'SHOW_CARD_INPUT_FORM':
+        case 'SHOW_CARD_INPUT_FORM': {
+            const { card, mode, isNew, isEdit, parentId } = action.payload;
             return Object.assign({}, state, {
                 open: true,
-                storyId: action.payload.storyId,
-                task: action.payload.task
+                card: card,
+                mode: mode,
+                isNew: isNew,
+                parentId: parentId
             });
-        case 'HIDE_CARD_INPUT_FORM':
+        }
+        case 'HIDE_CARD_INPUT_FORM': {
+            const { card, mode, isNew, isEdit } = action.payload;
             return Object.assign({}, state, {
                 open: false,
-                storyId: action.payload.storyId,
-                task: action.payload.task
+                card: card,
+                mode: mode,
+                isEdit: false
             });
+        }
+        case 'SWITCH_EDIT_MODE_CARD_INPUT_FORM': {
+            const { isEdit } = action.payload;
+            return Object.assign({}, state, {
+                isEdit: isEdit
+            })
+        }
+        case 'SWITCH_CONFIRM_DIALOG': {
+            const { isShow } = action.payload;
+            return Object.assign({}, state, {
+                openConfirm: isShow
+            });
+        }
         default:
             return state;
     }
