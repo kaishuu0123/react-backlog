@@ -8,7 +8,7 @@ import {
 } from 'semantic-ui-react';
 import withDragDropContext from '../lib/withDragDropContext';
 import Sprint from './backlogs/sprint.jsx';
-import StoryInputDialog from './backlogs/storyInputDialog.jsx';
+import CardInputForm from './common/cardInputForm.jsx';
 import StoryItemPreview from './backlogs/storyItemPreview.jsx';
 import { changeStorySortOrder } from '../actions/story';
 
@@ -16,7 +16,7 @@ function mapStateToProps(state) {
     return {
         sprints: state.sprint,
         stories: state.story,
-        storyInputDialog: state.storyInputDialog
+        cardInputForm: state.cardInputForm
     };
 }
 
@@ -55,7 +55,7 @@ class Backlog extends React.Component {
                             <Sprint sprintTitle='Backlogs' sprintId={1} stories={stories[1]} />
                         </Grid.Column>
                     </Grid>
-                    <StoryInputDialog {...this.props.storyInputDialog} />
+                    <CardInputForm {...this.props.cardInputForm} />
                     <StoryItemPreview />
                 </div>
             </div>

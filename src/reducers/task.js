@@ -174,6 +174,18 @@ export default function (state = INITIAL_STATE, action) {
                 }
             };
         }
+        case 'DELETE_TASK': {
+            const { task } = action.payload;
+            const newState = Object.assign({}, state);
+
+            newState[task.storyId][task.status] = newState[task.storyId][task.status].filter((item) => {
+                return task !== item;
+            });
+
+            return {
+                ...newState,
+            }
+        }
         default:
             return state;
     }

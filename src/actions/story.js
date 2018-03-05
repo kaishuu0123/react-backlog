@@ -9,14 +9,23 @@ export function addStory (sprintId, title, description) {
     }
 }
 
-export function updateStory (sprintId, storyId, title, description) {
+export function updateStory (sprintId, story, title, description) {
     return {
         type: 'UPDATE_STORY',
         payload: {
             sprintId: sprintId,
-            storyId: storyId,
+            story: story,
             title: title,
             description: description
+        }
+    }
+}
+
+export function deleteStory (story) {
+    return {
+        type: 'DELETE_STORY',
+        payload: {
+            story: story,
         }
     }
 }

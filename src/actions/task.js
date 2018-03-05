@@ -72,3 +72,12 @@ export function updateTask(storyId, task, title, description) {
         }
     }
 }
+
+export function deleteTask(task) {
+    return {
+        type: 'DELETE_TASK',
+        payload: {
+            task: task
+        }
+    }
+}
