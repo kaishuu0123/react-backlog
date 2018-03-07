@@ -12,6 +12,8 @@ import Kanban from './components/kanban.jsx';
 import Backlog from './components/backlog.jsx';
 
 import 'semantic-ui-css/semantic.min.css';
+import 'react-dates/initialize';
+import 'react-dates/lib/css/_datepicker.css';
 
 document.addEventListener('DOMContentLoaded', () => {
   render(

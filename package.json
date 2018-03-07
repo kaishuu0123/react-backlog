@@ -31,7 +31,9 @@
   },
   "dependencies": {
     "history": "^4.7.2",
+    "moment": "^2.21.0",
     "react": "^16.2.0",
+    "react-dates": "^16.3.6",
     "react-dnd": "^2.5.4",
     "react-dnd-html5-backend": "^2.5.4",
     "react-dnd-touch-backend": "^0.3.20",

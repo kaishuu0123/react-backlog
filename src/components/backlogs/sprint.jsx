@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
+import moment from 'moment';
 import {
     Segment,
     Header,
@@ -8,11 +9,14 @@ import {
     Label,
     Button,
     Grid,
-    Popup
+    Popup,
+    Input
 } from 'semantic-ui-react';
+import { DateRangePicker } from 'react-dates';
 
 import { showCardInputForm } from '../../actions/cardInputForm';
 import StoryList from './storyList.jsx';
+import { updateSprint } from '../../actions/sprint';
 
 function mapStateToProps (state) {
     return {
@@ -24,21 +28,151 @@ class Sprint extends React.Component {
     constructor(props) {
         super(props);
 
+        const { title, startDate, endDate } = props.sprint;
+
+        this.state = {
+            isEdit: false,
+            title: title,
+            startDate: startDate,
+            endDate: endDate,
+            focusedInput: null
+        }
+
         this.showDialog = this.showDialog.bind(this);
         this.viewKanban = this.viewKanban.bind(this);
+        this.editSprint = this.editSprint.bind(this);
+        this.updateSprint = this.updateSprint.bind(this);
     }
 
     showDialog() {
-        this.props.showCardInputForm(true, null, 'story', this.props.sprintId);
+        this.props.showCardInputForm(true, null, 'story', this.props.sprint.id);
     }
 
     viewKanban() {
-        this.props.history.push('/kanban/' + this.props.sprintId);
+        this.props.history.push('/kanban/' + this.props.sprint.id);
+    }
+
+    componentWillReceiveProps(props) {
+        this.setDefaultState(
+            props.sprint.title,
+            props.sprint.startDate,
+            props.sprint.endDate
+        )
+    }
+
+    setDefaultState(title, startDate, endDate) {
+        this.setState({
+            title: title,
+            startDate: startDate,
+            endDate: endDate
+        })
+    }
+
+    editSprint() {
+        this.setState({
+            isEdit: true
+        })
+    }
+
+    updateSprint() {
+        const { title, startDate, endDate } = this.state
+        const { sprint } = this.props
+
+        this.props.updateSprint(
+            sprint.id,
+            title,
+            startDate,
+            endDate
+        )
+
+        this.setState({
+            isEdit: false
+        })
+    }
+
+    renderSprintHeader() {
+        const {
+            sprint, stories
+        } = this.props;
+        const { title, startDate, endDate, isEdit } = this.state;
+
+        const startDateId = `sprint_start_date_id_${sprint.id}`;
+        const endDateId = `sprint_end_date_id_${sprint.id}`;
+
+        return (
+            <Grid.Row columns={3} verticalAlign='middle'>
+                <Grid.Column width={5}>
+                    { isEdit ? (
+                        <Input
+                            placeholder='Sprint Title'
+                            onChange={(e) => this.setState({title: e.target.value})}
+                            value={title}
+                            fluid />
+                    ) : (
+                        <span style={{fontWeight: '700', fontSize: '1.1em', display: 'inline-block'}}>{sprint.title}</span>
+                    )}
+                </Grid.Column>
+                { isEdit ? (
+                        <Grid.Column width={9} textAlign='right'>
+                            <DateRangePicker
+                                startDate={this.state.startDate}
+                                startDateId={startDateId}
+                                endDate={this.state.endDate}
+                                endDateId={endDateId}
+                                onDatesChange={({ startDate, endDate }) => this.setState({ startDate, endDate })}
+                                focusedInput={this.state.focusedInput}
+                                onFocusChange={focusedInput => this.setState({ focusedInput })}
+                                displayFormat="YYYY/MM/DD"
+                                small
+                            />
+                        </Grid.Column>
+                    ) : (
+                        <Grid.Column width={8} textAlign='right' style={{padding: '0px'}}>
+                            { startDate && endDate &&
+                                <span>{startDate && startDate.format("YYYY/MM/DD")} 〜 {endDate && endDate.format("YYYY/MM/DD")}</span>
+                            }
+                        </Grid.Column>
+                    )}
+                { isEdit ? (
+                    <Grid.Column width={2}>
+                        <Popup
+                            trigger={<Button compact size='mini' icon='save' circular floated="right" onClick={this.updateSprint} />}
+                            content='Update Sprint'
+                            position='top center'
+                            on='hover'
+                            />
+                    </Grid.Column>
+                ) : (
+                    <Grid.Column width={3}>
+                        { sprint.id !== 1 &&
+                            <Popup
+                                trigger={<Button compact size='mini' icon='edit' circular floated="right" onClick={this.editSprint}/>}
+                                content='Edit Sprint'
+                                position='top center'
+                                />
+                        }
+                        { sprint.id !== 1 &&
+                            <Popup
+                                trigger={<Button compact size='mini' icon='grid layout' circular floated="right" onClick={this.viewKanban}/>}
+                                content='View Kanban'
+                                position='top center'
+                                />
+                        }
+                        <Popup
+                            trigger={<Button compact size='mini' icon='plus' circular floated="right" onClick={this.showDialog} />}
+                            content='Add Story'
+                            position='top center'
+                            on='hover'
+                            />
+                    </Grid.Column>
+                )}
+            </Grid.Row>
+        )
     }
 
     render() {
         const {
-            sprintId, sprintTitle, stories
+            sprint, stories
         } = this.props;
 
         const totalStoryCount = stories.length;
@@ -50,33 +184,11 @@ class Sprint extends React.Component {
             <Segment.Group>
                 <Segment color='grey'>
                     <Grid>
-                        <Grid.Row columns={3} verticalAlign='middle'>
-                            <Grid.Column width={4}>
-                                <span style={{fontWeight: '700', fontSize: '1.1em', display: 'inline-block'}}>{sprintTitle}</span>
-                            </Grid.Column>
-                            <Grid.Column width={9} textAlign='right' style={{padding: '0px'}}>
-                                <span>2018/01/01 〜 2018/02/02</span>
-                            </Grid.Column>
-                            <Grid.Column width={3}>
-                                { sprintId !== 1 &&
-                                    <Popup
-                                        trigger={<Button compact size='mini' icon='grid layout' circular floated="right" onClick={this.viewKanban}/>}
-                                        content='View Kanban'
-                                        position='top center'
-                                        />
-                                }
-                                <Popup
-                                    trigger={<Button compact size='mini' icon='plus' circular floated="right" onClick={this.showDialog} />}
-                                    content='Add Story'
-                                    position='top center'
-                                    on='hover'
-                                    />
-                            </Grid.Column>
-                        </Grid.Row>
+                        {this.renderSprintHeader()}
                     </Grid>
                 </Segment>
                 <Segment style={{padding: '0px'}}>
-                    <StoryList sprintId={sprintId} stories={stories}/>
+                    <StoryList sprintId={sprint.id} stories={stories}/>
                 </Segment>
                 <Segment secondary>
                     <Grid columns={3}>
@@ -98,4 +210,4 @@ class Sprint extends React.Component {
     }
 }
 
-export default connect(mapStateToProps, { showCardInputForm })(withRouter(Sprint));
+export default connect(mapStateToProps, { showCardInputForm, updateSprint })(withRouter(Sprint));

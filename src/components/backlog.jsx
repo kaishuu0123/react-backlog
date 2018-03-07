@@ -4,13 +4,15 @@ import GlobalHeader from './header.jsx';
 import {
     Container,
     Grid,
-    Header
+    Header,
+    Button
 } from 'semantic-ui-react';
 import withDragDropContext from '../lib/withDragDropContext';
 import Sprint from './backlogs/sprint.jsx';
 import CardInputForm from './common/cardInputForm.jsx';
 import StoryItemPreview from './backlogs/storyItemPreview.jsx';
 import { changeStorySortOrder } from '../actions/story';
+import { addSprint } from '../actions/sprint';
 
 function mapStateToProps(state) {
     return {
@@ -23,13 +25,12 @@ function mapStateToProps(state) {
 class Backlog extends React.Component {
     constructor(props) {
         super(props);
-        this.getStories = this.getStories.bind(this);
+
+        this.addSprint = this.addSprint.bind(this);
     }
 
-    getStories(sprintId) {
-        return this.props.stories.filter((story, index) => {
-            return story.sprintId === sprintId;
-        })
+    addSprint() {
+        this.props.addSprint();
     }
 
     render() {
@@ -37,6 +38,9 @@ class Backlog extends React.Component {
         const excludedBacklogSprints = sprints.filter((sprint) => {
             return sprint.id !== 1;
         });
+        const backlogSprint = sprints.filter((sprint) => {
+            return sprint.id === 1;
+        })[0];
 
         return (
             <div>
@@ -45,14 +49,15 @@ class Backlog extends React.Component {
                     <Header as='h1' dividing>
                         Backlog
                     </Header>
+                    <Button compact color='blue' content='Add sprint' onClick={this.addSprint} />
                     <Grid columns={2}>
                         <Grid.Column>
                             {excludedBacklogSprints.map((sprint, index) => (
-                                <Sprint key={index} sprintTitle={sprint.sprintTitle} sprintId={sprint.id} stories={stories[sprint.id]} />
+                                <Sprint key={index} sprint={sprint} stories={stories[sprint.id]} />
                             ))}
                         </Grid.Column>
                         <Grid.Column>
-                            <Sprint sprintTitle='Backlogs' sprintId={1} stories={stories[1]} />
+                            <Sprint sprint={backlogSprint} stories={stories[1]} />
                         </Grid.Column>
                     </Grid>
                     <CardInputForm {...this.props.cardInputForm} />
@@ -63,5 +68,5 @@ class Backlog extends React.Component {
     }
 }
 
-Backlog = connect(mapStateToProps, { changeStorySortOrder })(Backlog);
+Backlog = connect(mapStateToProps, { addSprint, changeStorySortOrder })(Backlog);
 export default withDragDropContext(Backlog);
