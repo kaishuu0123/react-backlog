@@ -64,6 +64,19 @@ const INITIAL_STATE = {
 
 export default function (state = INITIAL_STATE, action) {
     switch(action.type) {
+        case 'ADD_SPRINT': {
+            const newState = Object.assign({}, state);
+
+            let maxId = 0;
+            Object.keys(newState).forEach((sprintId) => {
+                maxId = Math.max(sprintId, maxId);
+            });
+
+            return {
+                ...state,
+                [maxId + 1]: []
+            }
+        }
         case 'ADD_STORY': {
             const { sprintId, title, description } = action.payload;
             const newState = Object.assign({}, state);

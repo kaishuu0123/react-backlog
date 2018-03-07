@@ -49,7 +49,7 @@ class Kanban extends React.Component {
         const entry = sprint.find((entry) => {
             return Number(params.sprintId) === entry.id
         });
-        const sprintTitle = entry.sprintTitle;
+        const sprintTitle = entry.title;
 
         const columnWidth = parseInt(16 / (statuses.length + 1));
         const get = (p, o) => p.reduce((xs, x) => (xs && xs[x]) ? xs[x] : null, o)
