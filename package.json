@@ -23,6 +23,8 @@
     "file-loader": "^1.1.6",
     "html-loader": "^0.5.5",
     "html-webpack-plugin": "^2.30.1",
+    "node-sass": "^4.7.2",
+    "sass-loader": "^6.0.7",
     "style-loader": "^0.20.1",
     "url-loader": "^0.6.2",
     "webpack": "^3.10.0",
@@ -30,14 +32,20 @@
     "webpack-merge": "^4.1.1"
   },
   "dependencies": {
+    "codemirror": "^5.35.0",
+    "highlight.js": "^9.12.0",
     "history": "^4.7.2",
     "moment": "^2.21.0",
+    "mousetrap": "^1.6.1",
     "react": "^16.2.0",
+    "react-codemirror2": "^4.1.0",
     "react-dates": "^16.3.6",
     "react-dnd": "^2.5.4",
     "react-dnd-html5-backend": "^2.5.4",
     "react-dnd-touch-backend": "^0.3.20",
     "react-dom": "^16.2.0",
+    "react-hotkeys": "^0.10.0",
+    "react-markdown": "^3.3.0",
     "react-redux": "^5.0.6",
     "react-router-dom": "^4.2.2",
     "react-router-redux": "^5.0.0-alpha.9",
@@ -45,6 +53,6 @@
     "redux-logger": "^3.0.6",
     "redux-thunk": "^2.2.0",
     "semantic-ui-css": "^2.2.14",
-    "semantic-ui-react": "^0.78.0"
+    "semantic-ui-react": "^0.78.3"
   }
 }

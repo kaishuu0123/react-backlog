@@ -179,7 +179,7 @@ export default function (state = INITIAL_STATE, action) {
             const newState = Object.assign({}, state);
 
             newState[task.storyId][task.status] = newState[task.storyId][task.status].filter((item) => {
-                return task !== item;
+                return task.id !== item.id;
             });
 
             return {

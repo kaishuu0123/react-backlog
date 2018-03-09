@@ -12,20 +12,25 @@ const INITIAL_STATE = {
 export default function (state = INITIAL_STATE, action) {
     switch(action.type) {
         case 'SHOW_CARD_INPUT_FORM': {
-            const { card, mode, isNew, isEdit, parentId } = action.payload;
+            const { card, mode, isNew, parentId } = action.payload;
             return Object.assign({}, state, {
                 open: true,
-                card: card,
+                card: {
+                    ...card
+                },
                 mode: mode,
                 isNew: isNew,
-                parentId: parentId
+                parentId: parentId,
+                isEdit: isNew ? true : false
             });
         }
         case 'HIDE_CARD_INPUT_FORM': {
             const { card, mode, isNew, isEdit } = action.payload;
             return Object.assign({}, state, {
                 open: false,
-                card: card,
+                card: {
+                    ...card
+                },
                 mode: mode,
                 isEdit: false
             });
@@ -34,6 +39,28 @@ export default function (state = INITIAL_STATE, action) {
             const { isEdit } = action.payload;
             return Object.assign({}, state, {
                 isEdit: isEdit
+            })
+        }
+        case 'UPDATE_STORY': {
+            const { story, title, description } = action.payload;
+
+            return Object.assign({}, state, {
+                card: {
+                    ...story,
+                    title: title,
+                    description: description
+                }
+            })
+        }
+        case 'UPDATE_TASK': {
+            const { task, title, description } = action.payload;
+
+            return Object.assign({}, state, {
+                card: {
+                    ...task,
+                    title: title,
+                    description: description
+                }
             })
         }
         case 'SWITCH_CONFIRM_DIALOG': {

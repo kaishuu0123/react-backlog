@@ -15,6 +15,9 @@ import 'semantic-ui-css/semantic.min.css';
 import 'react-dates/lib/css/_datepicker.css';
 import './react-dates_override.css';
 import 'react-dates/initialize';
+import './react-markdown_custom.scss';
+import 'highlight.js/styles/github.css';
+import './react-codemirror_custom.css';
 
 document.addEventListener('DOMContentLoaded', () => {
   render(

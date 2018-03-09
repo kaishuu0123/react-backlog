@@ -1,28 +1,61 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Ref, Grid, Form, Card, Icon, Button, Modal, Header, Input, TextArea } from 'semantic-ui-react';
+import {
+    Label,
+    Ref,
+    Grid,
+    Form,
+    Card,
+    Icon,
+    Button,
+    Modal,
+    Header,
+    Input,
+    TextArea,
+    Popup,
+    Segment
+} from 'semantic-ui-react';
+import Mousetrap from 'mousetrap';
+import isEmpty from 'lodash/isEmpty';
+import 'mousetrap/plugins/global-bind/mousetrap-global-bind.min.js'
 import { addTask, updateTask, deleteTask } from '../../actions/task';
 import { addStory, updateStory, deleteStory } from '../../actions/story';
 import { switchEditModeCardInputForm, hideCardInputForm, switchConfirmDialog } from '../../actions/cardInputForm';
+
+import CardComment from './cardComment.jsx';
+
+import ReactMarkdown from 'react-markdown';
+import TableBlock from '../markdown-renderer/tableBlock.jsx';
+import CodeBlock from '../markdown-renderer/codeBlock.jsx';
+import {Controlled as CodeMirror} from 'react-codemirror2';
+import 'codemirror/lib/codemirror.css';
+import 'codemirror/mode/gfm/gfm.js';
+import 'codemirror/addon/edit/continuelist.js';
 
 const mapStateToProps = (state, props) => {
     return {
     };
 };
 
+const codeMirrorFocusSegmentStyle = {
+    border: '1px solid #85b7d9',
+    borderRadius: '0.2em',
+    boxShadow: '0 0 0 0 rgba(34,36,38,.35) inset'
+}
+
 class ConfirmModal extends React.Component {
     constructor(props) {
         super(props);
 
         this.close = this.close.bind(this);
-        this.deleteTask = this.deleteTask.bind(this);
+        this.deleteCard = this.deleteCard.bind(this);
     }
 
     close() {
         this.props.switchConfirmDialog(false);
     }
 
-    deleteTask() {
+    deleteCard() {
         switch (this.props.mode) {
         case 'story':
             this.props.deleteStory(this.props.card);
@@ -52,7 +85,7 @@ class ConfirmModal extends React.Component {
                     <p>Are you sure?</p>
                 </Modal.Content>
                 <Modal.Actions>
-                    <Button compact color='red' content="OK" onClick={this.deleteTask} />
+                    <Button compact color='red' content="OK" onClick={this.deleteCard} />
                     <Button compact color='grey' content="Cancel" onClick={this.close} />
                 </Modal.Actions>
             </Modal>
@@ -72,19 +105,35 @@ class CardInputForm extends React.Component {
         this.disableEditMode = this.disableEditMode.bind(this);
         this.openConfirm = this.openConfirm.bind(this);
 
+        this.codeMirrorFocus = this.codeMirrorFocus.bind(this);
+        this.codeMirrorBlur = this.codeMirrorBlur.bind(this);
+
         this.state = {
             title: '',
             description: '',
         }
     }
 
-    componentWillReceiveProps(props) {
-        if (props.card) {
-            const card = props.card;
+    componentWillReceiveProps(nextProps) {
+        if (!isEmpty(nextProps.card)) {
+            const card = nextProps.card;
             this.setDefaultState(
                 card.title,
-                card.description
+                card.description,
             );
+        }
+
+        if (nextProps.open) {
+            Mousetrap.bindGlobal(['command+s', 'ctrl+s'], function(e) {
+                this.onSubmit();
+
+                // prevent default
+                return false;
+            }.bind(this));
+            Mousetrap.bind(['command+e', 'ctrl+e'], this.enableEditMode);
+        } else {
+            Mousetrap.unbind(['ctrl+s', 'command+s']);
+            Mousetrap.unbind(['ctrl+e', 'command+e']);
         }
     }
 
@@ -119,43 +168,39 @@ class CardInputForm extends React.Component {
     onSubmit() {
         const { mode, card } = this.props;
 
-        switch(mode) {
-        case 'story':
-            if (this.props.card) {
-                this.props.updateStory(
-                    this.props.card.sprintId,
-                    this.props.card,
-                    this.state.title,
-                    this.state.description
-                );
-            } else {
-                this.props.addStory(
-                    this.props.parentId,
-                    this.state.title,
-                    this.state.description
-                )
+        const [type, cardFunc] = (() => {
+            switch(mode) {
+            case 'story':
+                return isEmpty(this.props.card) ?
+                    ['add', this.props.addStory] :
+                    ['update', this.props.updateStory]
+            case 'task':
+                return isEmpty(this.props.card) ?
+                    ['add', this.props.addTask] :
+                    ['update', this.props.updateTask]
             }
+        })();
+
+        switch(type) {
+        case 'add':
+            cardFunc(
+                this.props.parentId,
+                this.state.title,
+                this.state.description
+            )
+            this.clearForm()
+            this.props.hideCardInputForm(this.props.storyId);
             break;
-        case 'task':
-            if (this.props.card) {
-                this.props.updateTask(
-                    this.props.card.storyId,
-                    this.props.card,
-                    this.state.title,
-                    this.state.description
-                );
-            } else {
-                this.props.addTask(
-                    this.props.parentId,
-                    this.state.title,
-                    this.state.description
-                )
-            }
+        case 'update':
+            cardFunc(
+                this.props.parentId,
+                this.props.card,
+                this.state.title,
+                this.state.description
+            );
+            this.disableEditMode()
             break;
         }
-
-        this.clearForm()
-        this.props.hideCardInputForm(this.props.storyId);
     }
 
     onCancel() {
@@ -187,22 +232,36 @@ class CardInputForm extends React.Component {
         this.props.switchConfirmDialog(true);
     }
 
+    codeMirrorFocus(editor, event) {
+        this.setState({
+            isCodeMirrorFocus: true
+        })
+    }
+
+    codeMirrorBlur(editor, event) {
+        this.setState({
+            isCodeMirrorFocus: false
+        })
+    }
+
     renderHeader() {
         const { isNew, isEdit, card, mode } = this.props;
         const { title, description } = this.state;
 
-        let headerId = `Add new ${mode}`;
-        if (card) {
-            headerId = `#${card.id}`;
-        }
+        const [idWidth, titleWidth, buttonWidth] = isNew ? [2, 12, 2] : [1, 12, 3];
 
         return (
             <Grid columns={3} verticalAlign='middle'>
                 <Grid.Row>
-                    <Grid.Column width={1}>
-                        <Header as='h3'>{headerId}</Header>
+                    <Grid.Column width={idWidth}>
+                        { !isNew &&
+                            <Header as='h2'>{`#${card.id}`}</Header>
+                        }
+                        { isNew &&
+                            <p>New {mode}</p>
+                        }
                     </Grid.Column>
-                    <Grid.Column width={12}>
+                    <Grid.Column width={titleWidth}>
                         {(isEdit || isNew) ? (
                             <Form>
                                 <Ref
@@ -218,20 +277,48 @@ class CardInputForm extends React.Component {
                                 </Ref>
                             </Form>
                         ) : (
-                            <Header as='h3'>{title}</Header>
+                            <Header as='h2'>{title}</Header>
                         )}
                     </Grid.Column>
-                    <Grid.Column width={3} textAlign='right'>
-                        { !isNew &&
+                    <Grid.Column width={buttonWidth} textAlign='right'>
+                        { !isNew && !isEdit &&
                             <Button.Group>
-                                    <Button basic color='grey' icon onClick={this.enableEditMode}>
-                                        <Icon name='write' />
-                                    </Button>
-                                    <Button basic color='red' icon onClick={this.openConfirm}>
-                                        <Icon name='trash' />
-                                    </Button>
+                                <Popup
+                                    trigger={
+                                        <Button basic color='grey' icon onClick={this.enableEditMode}>
+                                            <Icon name='write' />
+                                        </Button>
+                                    }
+                                    content='Edit Card (Ctrl+E)'
+                                    position='top center'
+                                    on='hover'
+                                />
+                                <Popup
+                                    trigger={
+                                        <Button basic color='grey' icon onClick={this.openConfirm}>
+                                            <Icon name='trash' />
+                                        </Button>
+                                    }
+                                    content='Delete Card'
+                                    position='top center'
+                                    on='hover'
+                                />
                                 <ConfirmModal {...this.props} />
                             </Button.Group>
+                        }
+                        { (isNew || isEdit) &&
+                            <Popup
+                                trigger={
+                                    <Button basic color='teal' icon onClick={this.onSubmit}>
+                                        <Icon name='checkmark' />
+                                    </Button>
+                                }
+                                content={
+                                    isNew ? 'Save Card (Ctrl+S)' : 'Update Card (Ctrl+S)'
+                                }
+                                position='top center'
+                                on='hover'
+                            />
                         }
                     </Grid.Column>
                 </Grid.Row>
@@ -245,27 +332,51 @@ class CardInputForm extends React.Component {
 
         if (isEdit || isNew) {
             return (
-                <Form>
-                    <Form.Field
-                        id='form-textarea-control-description'
-                        control={TextArea}
-                        label='Description'
-                        placeholder='Description'
-                        onChange={(e) => this.setState({description: e.target.value})}
-                        value={description} />
-                </Form>
+                <div className="CodeMirrorWrapper">
+                    <CodeMirror
+                        value={description}
+                        options={{
+                            mode: { name: 'gfm', gitHubSpice: false },
+                            theme: 'default',
+                            lineWrapping: true,
+                            extraKeys: {
+                                "Enter": "newlineAndIndentContinueMarkdownList",
+                                "Tab": "indentMore",
+                                "Shift-Tab": "indentLess",
+                            },
+                            indentUnit: 4,
+                            smartIndent: true,
+                            indentWithTabs: false
+                        }}
+                        onBeforeChange={(editor, data, value) => {
+                            this.setState({description: value});
+                        }}
+                        onChange={(editor, data, value) => {
+                        }}
+                        onFocus={this.codeMirrorFocus}
+                        onBlur={this.codeMirrorBlur}
+                    />
+                </div>
             );
         }
 
         return (
-            <div>
-                { description }
+            <div className='markdown'>
+                <ReactMarkdown
+                    source={description}
+                    skipHtml={false}
+                    escapeHtml={false}
+                    renderers={{
+                        table: TableBlock,
+                        code: CodeBlock
+                    }}
+                />
             </div>
         );
     }
 
     render() {
-        const { title, description } = this.state;
+        const { title, description, isCodeMirrorFocus } = this.state;
         const { card, dimmer, open, isEdit, mode } = this.props;
 
         const ref = open ? this.handleRef : null;
@@ -280,13 +391,32 @@ class CardInputForm extends React.Component {
                     </Modal.Header>
                     <Modal.Content>
                         <Modal.Description>
-                            {this.renderDescription()}
+                            <Header as='h3' dividing>
+                                Description
+                            </Header>
+                            <Segment style={
+                                isCodeMirrorFocus ? codeMirrorFocusSegmentStyle : {}
+                            }>
+                                {this.renderDescription()}
+                            </Segment>
+                        </Modal.Description>
+                        <Modal.Description style={{marginTop: '1em'}}>
+                            <Header as='h3' dividing>
+                                Comments
+                            </Header>
+                            <CardComment />
                         </Modal.Description>
                     </Modal.Content>
-                    <Modal.Actions>
-                        <Button compact color='blue' content={submitLabel} onClick={this.onSubmit} />
-                        <Button compact color='grey' content="Cancel" onClick={this.close} />
-                    </Modal.Actions>
+                    <Popup
+                        trigger={
+                            <Label as='a' floating onClick={this.onCancel}>
+                                <Icon name="close" style={{margin: '0px'}} />
+                            </Label>
+                        }
+                        content='Close Window'
+                        position='top center'
+                        on='hover'
+                    />
                 </Modal>
             </div>
         );
