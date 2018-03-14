@@ -21,6 +21,7 @@ import { updateSprint } from '../../actions/sprint';
 function mapStateToProps (state) {
     return {
         router: state.router,
+        pointList: state.point
     }
 }
 
@@ -172,11 +173,19 @@ class Sprint extends React.Component {
 
     render() {
         const {
-            sprint, stories
+            sprint, stories, pointList
         } = this.props;
 
+        const pointFindFunc = (story) => {
+            const point = pointList.find((point) => point.id === story.pointId)
+            if (point) {
+                return point.point
+            }
+            return null;
+        }
+
         const totalStoryCount = stories.length;
-        const totalStoryPoint = stories.map((story) => (story.point || 0)).reduce((prevPoint, curPoint) => {
+        const totalStoryPoint = stories.map((story) => ( pointFindFunc(story) || 0)).reduce((prevPoint, curPoint) => {
             return prevPoint + curPoint;
         }, 0);
 
@@ -188,7 +197,7 @@ class Sprint extends React.Component {
                     </Grid>
                 </Segment>
                 <Segment style={{padding: '0px'}}>
-                    <StoryList sprintId={sprint.id} stories={stories}/>
+                    <StoryList sprintId={sprint.id} stories={stories} />
                 </Segment>
                 <Segment secondary>
                     <Grid columns={3}>

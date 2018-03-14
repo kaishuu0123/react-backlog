@@ -37,13 +37,13 @@ export function addTask(storyId, taskTitle, taskDescription) {
     }
 }
 
-export function changeTaskSortOrder (srcTask, dstTask, status, dragIndex, hoverIndex) {
+export function changeTaskSortOrder (srcTask, dstTask, statusId, dragIndex, hoverIndex) {
     return {
         type: 'CHANGE_TASK_SORT_ORDER',
         payload: {
             srcTask: srcTask,
             dstTask: dstTask,
-            status: status,
+            statusId: statusId,
             dragIndex: dragIndex,
             hoverIndex: hoverIndex,
         }

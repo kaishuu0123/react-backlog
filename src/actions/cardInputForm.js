@@ -39,3 +39,36 @@ export function switchConfirmDialog(isShow) {
         }
     }
 }
+
+export function changeCardAssigned(mode, card, assigned) {
+    return {
+        type: 'CHANGE_CARD_ASSIGNED',
+        payload: {
+            mode: mode,
+            card: card,
+            assigned: assigned
+        }
+    }
+}
+
+export function changeCardStatus(mode, card, statusId) {
+    return {
+        type: 'CHANGE_CARD_STATUS',
+        payload: {
+            mode: mode,
+            card: card,
+            statusId: statusId
+        }
+    }
+}
+
+export function changeCardPoint(mode, card, pointId) {
+    return {
+        type: 'CHANGE_CARD_POINT',
+        payload: {
+            mode: mode,
+            card: card,
+            pointId: pointId
+        }
+    }
+}

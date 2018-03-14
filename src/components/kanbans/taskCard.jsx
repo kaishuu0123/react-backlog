@@ -75,10 +75,10 @@ const taskTarget = {
         const hoverIndex = props.index
         const srcTask = monitor.getItem().task;
         const dstTask = props.task;
-        const status = dstTask.status;
+        const statusId = dstTask.statusId;
 
         // Time to actually perform the action
-		props.changeTaskSortOrder(srcTask, dstTask, status, dragIndex, hoverIndex)
+		props.changeTaskSortOrder(srcTask, dstTask, statusId, dragIndex, hoverIndex)
 
 		// Note: we're mutating the monitor item here!
 		// Generally it's better to avoid mutations,

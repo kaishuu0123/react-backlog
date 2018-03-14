@@ -18,21 +18,15 @@ function mapStateToProps(state) {
         tasks: state.task,
         stories: state.story,
         cardInputForm: state.cardInputForm,
+        member: state.member,
+        cardStatus: state.cardStatus,
+        point: state.point
     };
 }
 
 class Kanban extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {
-            statuses: [
-                'New',
-                'In Progress',
-                'Resolved',
-                'Feedback',
-                'Finish'
-            ]
-        }
     }
 
     render() {
@@ -40,18 +34,16 @@ class Kanban extends React.Component {
 
         const stories = this.props.stories[params.sprintId];
         const {
-            tasks, sprint
+            tasks, sprint,
+            cardStatus
         } = this.props;
-        const {
-            statuses
-        } = this.state;
 
         const entry = sprint.find((entry) => {
             return Number(params.sprintId) === entry.id
         });
         const sprintTitle = entry.title;
 
-        const columnWidth = parseInt(16 / (statuses.length + 1));
+        const columnWidth = parseInt(16 / (cardStatus.length + 1));
         const get = (p, o) => p.reduce((xs, x) => (xs && xs[x]) ? xs[x] : null, o)
 
         return(
@@ -65,8 +57,8 @@ class Kanban extends React.Component {
                         <Table.Header>
                             <Table.Row>
                                 <Table.HeaderCell width={columnWidth} />
-                                {statuses.map((status, index) => (
-                                    <Table.HeaderCell key={index} width={columnWidth}>{status}</Table.HeaderCell>
+                                {cardStatus.map((status, index) => (
+                                    <Table.HeaderCell key={index} width={columnWidth}>{status.status}</Table.HeaderCell>
                                 ))}
                             </Table.Row>
                         </Table.Header>
@@ -77,9 +69,9 @@ class Kanban extends React.Component {
                                         <StoryCard key={index} story={story} index={index} />
                                         <AddTaskCardButton storyId={story.id}/>
                                     </Table.Cell>
-                                    {statuses.map((status, index) => (
-                                        <KanbanColumn key={index} status={status} storyId={story.id} tasks={(get([story.id, status], tasks) || []).filter((task) => task.status === status)}>
-                                            {(get([story.id, status], tasks) || []).filter((task) => task.status === status).map((task, index) => (
+                                    {cardStatus.map((status, index) => (
+                                        <KanbanColumn key={index} status={status} storyId={story.id} tasks={(get([story.id, status.id], tasks) || []).filter((task) => task.statusId === status.id)}>
+                                            {(get([story.id, status.id], tasks) || []).filter((task) => task.statusId === status.id).map((task, index) => (
                                                 <TaskCard key={index} task={task} index={index} status={status} />
                                             ))}
                                         </KanbanColumn>
@@ -88,7 +80,12 @@ class Kanban extends React.Component {
                             ))}
                         </Table.Body>
                     </Table>
-                    <CardInputForm {...this.props.cardInputForm} />
+                    <CardInputForm
+                        {...this.props.cardInputForm}
+                        cardStatuses={this.props.cardStatus}
+                        members={this.props.member}
+                        points={this.props.point}
+                    />
                     <CardPreview key="__preview" />
                 </div>
             </div>
