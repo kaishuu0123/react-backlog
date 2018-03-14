@@ -10,19 +10,27 @@ import {
     Button,
     Modal,
     Header,
-    Input,
-    TextArea,
     Popup,
-    Segment
+    Segment,
+    Input,
 } from 'semantic-ui-react';
 import Mousetrap from 'mousetrap';
 import isEmpty from 'lodash/isEmpty';
 import 'mousetrap/plugins/global-bind/mousetrap-global-bind.min.js'
 import { addTask, updateTask, deleteTask } from '../../actions/task';
 import { addStory, updateStory, deleteStory } from '../../actions/story';
-import { switchEditModeCardInputForm, hideCardInputForm, switchConfirmDialog } from '../../actions/cardInputForm';
+import {
+    switchEditModeCardInputForm,
+    hideCardInputForm,
+    switchConfirmDialog,
+    changeCardAssigned,
+    changeCardStatus,
+    changeCardPoint
+} from '../../actions/cardInputForm';
 
 import CardComment from './cardComment.jsx';
+import ConfirmModal from './confirmModal';
+import CustomSimpleDropdown from './customSimpleDropdown.jsx';
 
 import ReactMarkdown from 'react-markdown';
 import TableBlock from '../markdown-renderer/tableBlock.jsx';
@@ -43,56 +51,6 @@ const codeMirrorFocusSegmentStyle = {
     boxShadow: '0 0 0 0 rgba(34,36,38,.35) inset'
 }
 
-class ConfirmModal extends React.Component {
-    constructor(props) {
-        super(props);
-
-        this.close = this.close.bind(this);
-        this.deleteCard = this.deleteCard.bind(this);
-    }
-
-    close() {
-        this.props.switchConfirmDialog(false);
-    }
-
-    deleteCard() {
-        switch (this.props.mode) {
-        case 'story':
-            this.props.deleteStory(this.props.card);
-            break;
-        case 'task':
-            this.props.deleteTask(this.props.card);
-            break;
-        }
-
-        this.close();
-        this.props.hideCardInputForm(null);
-    }
-
-    render() {
-        const { openConfirm, card } = this.props;
-
-        return (
-            <Modal
-                dimmer='inverted'
-                open={openConfirm}
-                size='small'
-            >
-                <Modal.Header>
-                    Delete #{card.id} {card.title}
-                </Modal.Header>
-                <Modal.Content>
-                    <p>Are you sure?</p>
-                </Modal.Content>
-                <Modal.Actions>
-                    <Button compact color='red' content="OK" onClick={this.deleteCard} />
-                    <Button compact color='grey' content="Cancel" onClick={this.close} />
-                </Modal.Actions>
-            </Modal>
-        )
-    }
-}
-
 class CardInputForm extends React.Component {
     constructor(props) {
         super(props)
@@ -108,9 +66,16 @@ class CardInputForm extends React.Component {
         this.codeMirrorFocus = this.codeMirrorFocus.bind(this);
         this.codeMirrorBlur = this.codeMirrorBlur.bind(this);
 
+        this.onChangeCardAssigned = this.onChangeCardAssigned.bind(this);
+        this.onChangeCardStatus = this.onChangeCardStatus.bind(this);
+        this.onChangeCardPoint = this.onChangeCardPoint.bind(this);
+
         this.state = {
             title: '',
             description: '',
+            assigned: null,
+            statusId: 1,
+            pointId: null
         }
     }
 
@@ -118,8 +83,7 @@ class CardInputForm extends React.Component {
         if (!isEmpty(nextProps.card)) {
             const card = nextProps.card;
             this.setDefaultState(
-                card.title,
-                card.description,
+                card
             );
         }
 
@@ -137,11 +101,15 @@ class CardInputForm extends React.Component {
         }
     }
 
-    setDefaultState(title, description) {
+    setDefaultState(card) {
+        const { title, description, assigned, statusId, pointId } = card;
         // Set state using data.
         this.setState({
             title: title,
-            description: description
+            description: description,
+            assigned: assigned,
+            statusId: statusId,
+            pointId: pointId
         })
     }
 
@@ -244,9 +212,36 @@ class CardInputForm extends React.Component {
         })
     }
 
+    onChangeCardAssigned(selectedValue) {
+        const { card, mode } = this.props;
+
+        this.setState({
+            assigned: selectedValue
+        });
+        this.props.changeCardAssigned(mode, card, selectedValue);
+    }
+
+    onChangeCardStatus(selectedValue) {
+        const { card, mode } = this.props;
+
+        this.setState({
+            statusId: selectedValue
+        });
+        this.props.changeCardStatus(mode, card, selectedValue)
+    }
+
+    onChangeCardPoint(selectedValue) {
+        const { card, mode } = this.props;
+
+        this.setState({
+            pointId: selectedValue
+        });
+        this.props.changeCardPoint(mode, card, selectedValue);
+    }
+
     renderHeader() {
         const { isNew, isEdit, card, mode } = this.props;
-        const { title, description } = this.state;
+        const { title, description, assigned, statusId, point } = this.state;
 
         const [idWidth, titleWidth, buttonWidth] = isNew ? [2, 12, 2] : [1, 12, 3];
 
@@ -376,12 +371,20 @@ class CardInputForm extends React.Component {
     }
 
     render() {
-        const { title, description, isCodeMirrorFocus } = this.state;
+        const { title, description, assigned, statusId, pointId, isCodeMirrorFocus } = this.state;
         const { card, dimmer, open, isEdit, mode } = this.props;
 
         const ref = open ? this.handleRef : null;
 
-        const submitLabel = `${card ? 'Update' : 'Add'} ${mode}`
+        const memberOptions = (this.props.members || []).map((item) => {
+            return { value: item.id, label: item.name };
+        })
+        const statusOptions = (this.props.cardStatuses || []).map((item) => {
+            return { value: item.id, label: item.status };
+        })
+        const pointOptions = (this.props.points || []).map((item) => {
+            return { value: item.id, label: item.point.toFixed(1) };
+        })
 
         return (
             <div>
@@ -389,16 +392,71 @@ class CardInputForm extends React.Component {
                     <Modal.Header style={{padding: '1.25rem 1.5rem'}}>
                         {this.renderHeader()}
                     </Modal.Header>
-                    <Modal.Content>
+                    <Modal.Content scrolling>
                         <Modal.Description>
                             <Header as='h3' dividing>
                                 Description
                             </Header>
-                            <Segment style={
-                                isCodeMirrorFocus ? codeMirrorFocusSegmentStyle : {}
-                            }>
-                                {this.renderDescription()}
-                            </Segment>
+                            <Grid columns={2} divided>
+                                <Grid.Row>
+                                    <Grid.Column width={12}>
+                                        <Segment style={
+                                            isCodeMirrorFocus ? codeMirrorFocusSegmentStyle : {}
+                                        }>
+                                            {this.renderDescription()}
+                                        </Segment>
+                                    </Grid.Column>
+                                    <Grid.Column width={4}>
+                                        <Segment.Group>
+                                            { mode == 'story' ? (
+                                                    <Segment>
+                                                        <Header size='tiny'>
+                                                        Related Sprint
+                                                        </Header>
+                                                        <p>{this.props.parentId}</p>
+                                                    </Segment>
+                                                ) : (
+                                                    <Segment>
+                                                        <Header size='tiny'>
+                                                            Related Story
+                                                        </Header>
+                                                        <p>#{this.props.parentId}</p>
+                                                    </Segment>
+                                                )
+                                            }
+                                            <Segment>
+                                                <Header size='tiny'>Assign</Header>
+                                                <CustomSimpleDropdown
+                                                    placeholder='Select Member'
+                                                    options={memberOptions}
+                                                    onChange={this.onChangeCardAssigned}
+                                                    value={assigned}
+                                                />
+                                            </Segment>
+                                            <Segment>
+                                                <Header size='tiny'>Status</Header>
+                                                <CustomSimpleDropdown
+                                                    placeholder='Select status'
+                                                    options={statusOptions}
+                                                    onChange={this.onChangeCardStatus}
+                                                    value={statusId}
+                                                />
+                                            </Segment>
+                                            { mode === 'story' &&
+                                                <Segment>
+                                                    <Header size='tiny'>Point</Header>
+                                                    <CustomSimpleDropdown
+                                                        placeholder='Select Point'
+                                                        options={pointOptions}
+                                                        onChange={this.onChangeCardPoint}
+                                                        value={pointId}
+                                                    />
+                                                </Segment>
+                                            }
+                                        </Segment.Group>
+                                    </Grid.Column>
+                                </Grid.Row>
+                            </Grid>
                         </Modal.Description>
                         <Modal.Description style={{marginTop: '1em'}}>
                             <Header as='h3' dividing>
@@ -423,4 +481,9 @@ class CardInputForm extends React.Component {
     }
 }
 
-export default connect(mapStateToProps, { addTask, updateTask, addStory, updateStory, deleteStory, switchEditModeCardInputForm, hideCardInputForm, switchConfirmDialog, deleteTask })(CardInputForm);
+export default connect(mapStateToProps, {
+    addTask, updateTask, deleteTask,
+    addStory, updateStory, deleteStory,
+    switchEditModeCardInputForm, hideCardInputForm, switchConfirmDialog,
+    changeCardAssigned, changeCardStatus, changeCardPoint
+})(CardInputForm);

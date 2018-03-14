@@ -18,7 +18,10 @@ function mapStateToProps(state) {
     return {
         sprints: state.sprint,
         stories: state.story,
-        cardInputForm: state.cardInputForm
+        cardInputForm: state.cardInputForm,
+        member: state.member,
+        cardStatus: state.cardStatus,
+        point: state.point
     };
 }
 
@@ -53,14 +56,19 @@ class Backlog extends React.Component {
                     <Grid columns={2}>
                         <Grid.Column>
                             {excludedBacklogSprints.map((sprint, index) => (
-                                <Sprint key={index} sprint={sprint} stories={stories[sprint.id]} />
+                                <Sprint key={index} sprint={sprint} stories={stories[sprint.id]} isDialogOpen={this.props.cardInputForm.open} currentCardDialog={this.props.cardInputForm.card} />
                             ))}
                         </Grid.Column>
                         <Grid.Column>
                             <Sprint sprint={backlogSprint} stories={stories[1]} />
                         </Grid.Column>
                     </Grid>
-                    <CardInputForm {...this.props.cardInputForm} />
+                    <CardInputForm
+                        {...this.props.cardInputForm}
+                        cardStatuses={this.props.cardStatus}
+                        members={this.props.member}
+                        points={this.props.point}
+                    />
                     <StoryItemPreview />
                 </div>
             </div>

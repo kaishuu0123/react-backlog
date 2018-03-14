@@ -12,7 +12,7 @@ import { showCardInputForm } from '../../actions/cardInputForm';
 
 function mapStateToProps(state) {
     return {
-
+        pointList: state.point
     }
 }
 
@@ -126,16 +126,21 @@ class StoryItem extends React.Component {
         const {
             story, index,
             connectDragSource, isDragging,
-            connectDropTarget, isOver, clientOffset, sourceClientOffset
+            connectDropTarget, isOver, clientOffset, sourceClientOffset,
+            pointList
         } = this.props;
+
+        const pointObj = pointList.find((item) => {
+            return item.id === story.pointId
+        });
 
         return (
             connectDragSource(connectDropTarget(
                 <div className="item" onClick={this.showDialog}>
                     { isOver && this.renderOverlay('gray') }
-                    { story.point != null &&  story.point !== 0 &&
+                    { pointObj != null &&
                         <List.Content floated='right' style={this.displayStyle(isDragging)}>
-                            <Label size='mini' horizontal circular>{story.point}</Label>
+                            <Label size='mini' horizontal circular>{pointObj && pointObj.point.toFixed(1)}</Label>
                         </List.Content>
                     }
                     <List.Content style={this.displayStyle(isDragging)}>

@@ -1,9 +1,9 @@
 'use strict';
 
 import React from 'react';
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import DragLayer from 'react-dnd/lib/DragLayer';
-import StoryItem from './storyItem.jsx';
 
 import {
     List,
@@ -19,6 +19,12 @@ const layerStyles = {
     width: '350px',
     opacity: 0.8,
 };
+
+function mapStateToProps(state) {
+    return {
+        pointList: state.point
+    }
+}
 
 function collectPreview (monitor) {
     var item = monitor.getItem();
@@ -49,13 +55,25 @@ function getItemStyles (props) {
 }
 
 class StoryItemPreview extends React.Component {
+    constructor(props) {
+        super(props);
+
+        this.renderItem = this.renderItem.bind(this);
+    }
+
     renderItem(type, item) {
         const story = item.story;
+        const pointObj = this.props.pointList.find((item) => {
+            return item.id === story.pointId
+        });
+
         return (
             <div className="item">
-                <List.Content floated='right'>
-                    <Label size='mini' horizontal circular>{story.point}</Label>
-                </List.Content>
+                { pointObj != null &&
+                    <List.Content floated='right'>
+                        <Label size='mini' horizontal circular>{pointObj.point.toFixed(1)}</Label>
+                    </List.Content>
+                }
                 <List.Content>
                     <Label basic color='blue' size='mini' horizontal>#{story.id}</Label>
                     {story.title}
@@ -82,14 +100,5 @@ class StoryItemPreview extends React.Component {
     }
 }
 
-// StoryItemPreview.propTypes = {
-//     id: PropTypes.string,
-//     name: PropTypes.string,
-//     currentOffset: PropTypes.shape({
-//         x: PropTypes.number,
-//         y: PropTypes.number
-//     }),
-//     isDragging: PropTypes.bool
-// };
-
-export default DragLayer(collectPreview)(StoryItemPreview);
+StoryItemPreview = DragLayer(collectPreview)(StoryItemPreview);
+export default connect(mapStateToProps, {})(StoryItemPreview);

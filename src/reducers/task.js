@@ -1,37 +1,37 @@
 const INITIAL_STATE = {
     1: {
-        'New': [
+        1: [
             {
                 storyId: 1,
                 id: 3,
                 title: 'Task1',
                 description: 'text of Task1',
-                status: 'New'
+                statusId: 1
             },
             {
                 storyId: 1,
                 id: 4,
                 title: 'Task2',
                 description: 'text of Task2',
-                status: 'New'
+                statusId: 1
             }
         ]
     },
     2: {
-        'New': [
+        1: [
             {
                 storyId: 2,
                 id: 5,
                 title: '本番デプロイ',
                 description: '本番環境にデプロイする',
-                status: 'New'
+                statusId: 1
             },
             {
                 storyId: 2,
                 id: 6,
                 title: '結構長め長め長め長め長めのタスク名',
                 description: '結構長め長め長め長め長めのタスク名',
-                status: 'New'
+                statusId: 1
             }
         ]
     }
@@ -56,35 +56,34 @@ export default function (state = INITIAL_STATE, action) {
             });
 
             if (!(storyId in newState)) {
-                newState[storyId] = { 'New': [] };
+                newState[storyId] = { 1: [] };
             }
 
-            newState[storyId]['New'].push({
+            newState[storyId][1].push({
                 storyId: storyId,
                 id: maxId + 1,
                 title: taskTitle,
                 description: taskDescription,
-                status: 'New'
+                statusId: 1
             });
             return {
                 ...state,
                 [storyId]: {
-                    'New': [
-                        ...newState[storyId]['New']
+                    1: [
+                        ...newState[storyId][1]
                     ],
                     ...state[storyId],
                 }
             };
         }
         case 'UPDATE_TASK': {
-            const newState = Object.assign({}, state);
             const { storyId, task, title, description } = action.payload;
             const taskId = task.id;
 
             return {
                 ...state,
                 [storyId]: {
-                    [task.status]: newState[storyId][task.status].map((task) => {
+                    [task.statusId]: state[storyId][task.statusId].map((task) => {
                         if (task.id === taskId) {
                             return {
                                 ...task,
@@ -98,46 +97,46 @@ export default function (state = INITIAL_STATE, action) {
             }
         }
         case 'CHANGE_TASK_SORT_ORDER': {
-            const { srcTask, dstTask, status, dragIndex, hoverIndex } = action.payload;
+            const { srcTask, dstTask, statusId, dragIndex, hoverIndex } = action.payload;
             const newState = Object.assign({}, state);
 
             const srcStoryId = srcTask.storyId;
             const dstStoryId = dstTask.storyId;
-            const prevStatus = srcTask.status;
+            const prevStatusId = srcTask.statusId;
 
             if (srcStoryId !== dstStoryId) {
-                const srcTasks = (get([srcStoryId, srcTask.status], newState) || []);
-                const dstTasks = (get([dstStoryId, status], newState) || []);
+                const srcTasks = (get([srcStoryId, srcTask.statusId], newState) || []);
+                const dstTasks = (get([dstStoryId, statusId], newState) || []);
                 const [removed] = srcTasks.splice(dragIndex, 1);
                 removed.storyId = dstStoryId;
-                removed.status = status;
+                removed.statusId = statusId;
                 dstTasks.splice(hoverIndex, 0, removed);
 
                 return {
                     ...state,
                     [srcStoryId]: {
-                        [prevStatus]: [
+                        [prevStatusId]: [
                             ...srcTasks
                         ],
                         ...state[srcStoryId]
                     },
                     [dstStoryId]: {
-                        [status]: [
+                        [statusId]: [
                             ...dstTasks
                         ],
                         ...state[dstStoryId]
                     }
                 };
             } else {
-                const [removed] = (get([srcStoryId, srcTask.status], newState) || []).splice(dragIndex, 1);
-                removed.status = status;
-                newState[srcStoryId][status].splice(hoverIndex, 0, removed);
+                const [removed] = (get([srcStoryId, srcTask.statusId], newState) || []).splice(dragIndex, 1);
+                removed.statusId = statusId;
+                newState[srcStoryId][statusId].splice(hoverIndex, 0, removed);
 
                 return {
                     ...state,
                     [srcStoryId]: {
-                        [prevStatus]: [
-                            ...newState[srcStoryId][status]
+                        [prevStatusId]: [
+                            ...newState[srcStoryId][statusId]
                         ],
                         ...state[srcStoryId]
                     }
@@ -149,25 +148,25 @@ export default function (state = INITIAL_STATE, action) {
             const newState = Object.assign({}, state);
 
             const srcStoryId = srcTask.storyId;
-            const prevStatus = srcTask.status;
+            const prevStatusId = srcTask.statusId;
 
-            const srcTasks = (get([srcStoryId, srcTask.status], newState) || []);
-            const dstTasks = (get([dstColumn.storyId, dstColumn.status], newState) || []);
+            const srcTasks = (get([srcStoryId, srcTask.statusId], newState) || []);
+            const dstTasks = (get([dstColumn.storyId, dstColumn.status.id], newState) || []);
             const [removed] = srcTasks.splice(srcTaskIndex, 1);
             removed.storyId = dstColumn.storyId;
-            removed.status = dstColumn.status;
+            removed.statusId = dstColumn.status.id;
             dstTasks.splice(0, 0, removed);
 
             return {
                 ...state,
                 [srcStoryId]: {
-                    [prevStatus]: [
+                    [prevStatusId]: [
                         ...srcTasks
                     ],
                     ...state[srcStoryId]
                 },
                 [dstColumn.storyId]: {
-                    [dstColumn.status]: [
+                    [dstColumn.status.id]: [
                         ...dstTasks
                     ],
                     ...state[dstColumn.storyId]
@@ -178,12 +177,66 @@ export default function (state = INITIAL_STATE, action) {
             const { task } = action.payload;
             const newState = Object.assign({}, state);
 
-            newState[task.storyId][task.status] = newState[task.storyId][task.status].filter((item) => {
+            newState[task.storyId][task.statusId] = newState[task.storyId][task.statusId].filter((item) => {
                 return task.id !== item.id;
             });
 
             return {
                 ...newState,
+            }
+        }
+        case 'CHANGE_CARD_ASSIGNED': {
+            const { mode, card, assigned } = action.payload;
+
+            if (mode !== 'task') {
+                return state;
+            }
+
+            return {
+                ...state,
+                [card.storyId]: {
+                    ...state[card.storyId],
+                    [card.statusId]: state[card.storyId][card.statusId].map((task) => {
+                        if (task.id === card.id) {
+                            return {
+                                ...task,
+                                assigned: assigned
+                            }
+                        }
+
+                        return task;
+                    })
+                }
+            }
+        }
+        case 'CHANGE_CARD_STATUS': {
+            const { mode, card, statusId } = action.payload;
+
+            if (mode !== 'task') {
+                return state;
+            }
+
+            if (card.statusId === statusId) {
+                return state;
+            }
+
+            const newState = Object.assign({}, state)
+            const srcTasks = (get([card.storyId, card.statusId], newState) || []);
+            const dstTasks = (get([card.storyId, statusId], newState) || []);
+
+            return {
+                ...state,
+                [card.storyId]: {
+                    ...state[card.storyId],
+                    [card.statusId]: srcTasks.filter((task) => {
+                        return task.id !== card.id
+                    }),
+                    [statusId]: dstTasks.concat([
+                        Object.assign({}, card, {
+                            statusId: statusId
+                        })
+                    ])
+                }
             }
         }
         default:

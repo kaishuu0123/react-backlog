@@ -8,7 +8,6 @@ const INITIAL_STATE = {
             title: 'longlonglonglonglonglonglonglong story Title',
             description: 'text of story1',
             sprintId: 1,
-            point: 1.0,
             kind: 'feature'
         },
         {
@@ -16,7 +15,6 @@ const INITIAL_STATE = {
             title: 'Story Title6',
             description: 'text of story1',
             sprintId: 1,
-            point: 1.0,
             kind: 'bug'
         },
         {
@@ -24,7 +22,6 @@ const INITIAL_STATE = {
             title: 'Story Title7',
             description: 'text of story1',
             sprintId: 1,
-            point: 1.0,
             kind: 'imprv'
         }
     ],
@@ -34,14 +31,12 @@ const INITIAL_STATE = {
             title: 'ストーリータイトル',
             description: 'text of story2',
             sprintId: 2,
-            point: 3.0
         },
         {
             id: 3,
             title: 'ストーリータイトル3',
             description: 'text of story2',
             sprintId: 2,
-            point: 5.0
         },
     ],
     3: [
@@ -50,14 +45,12 @@ const INITIAL_STATE = {
             title: 'ストーリータイトル4',
             description: 'text of story2',
             sprintId: 3,
-            point: 3.0
         },
         {
             id: 5,
             title: 'ストーリータイトル5',
             description: 'text of story2',
             sprintId: 3,
-            point: 1.0
         },
     ]
 }
@@ -122,7 +115,7 @@ export default function (state = INITIAL_STATE, action) {
             const newState = Object.assign({}, state);
 
             newState[story.sprintId] = newState[story.sprintId].filter((item) => {
-                return story !== item;
+                return story.id !== item.id;
             });
 
             return {
@@ -197,6 +190,69 @@ export default function (state = INITIAL_STATE, action) {
                     ...dstStories
                 ]
             };
+        }
+        case 'CHANGE_CARD_ASSIGNED': {
+            const { mode, card, assigned } = action.payload;
+
+            if (mode !== 'story') {
+                return state;
+            }
+
+            return {
+                ...state,
+                [card.sprintId]: state[card.sprintId].map((story) => {
+                    if (story.id === card.id) {
+                        return {
+                            ...story,
+                            assigned: assigned
+                        }
+                    }
+
+                    return story;
+                })
+            }
+        }
+        case 'CHANGE_CARD_STATUS': {
+            const { mode, card, statusId } = action.payload;
+
+            if (mode !== 'story') {
+                return state;
+            }
+
+            return {
+                ...state,
+                [card.sprintId]: state[card.sprintId].map((story) => {
+                    if (story.id === card.id) {
+                        return {
+                            ...story,
+                            statusId: statusId
+                        }
+                    }
+
+                    return story;
+                })
+            }
+        }
+        case 'CHANGE_CARD_POINT': {
+            const { mode, card, pointId } = action.payload;
+
+            if (mode !== 'story') {
+                return state;
+            }
+
+            return {
+                ...state,
+                [card.sprintId]: state[card.sprintId].map((story) => {
+                    if (story.id === card.id) {
+                        return {
+                            ...story,
+                            pointId: pointId
+                        }
+                    }
+
+                    return story;
+                })
+            }
         }
         default:
             return state;

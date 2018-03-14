@@ -19,6 +19,8 @@ import './react-markdown_custom.scss';
 import 'highlight.js/styles/github.css';
 import './react-codemirror_custom.css';
 
+import 'react-select/dist/react-select.css';
+
 document.addEventListener('DOMContentLoaded', () => {
   render(
     <Provider store={store}>
