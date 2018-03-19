@@ -55,6 +55,18 @@ const INITIAL_STATE = {
     ]
 }
 
+function findCard(parentId, cardId, stories) {
+    let card;
+    stories[parentId].some((story) => {
+        if (story.id === cardId) {
+            card = story;
+            return true;
+        }
+    })
+
+    return card;
+}
+
 export default function (state = INITIAL_STATE, action) {
     switch(action.type) {
         case 'ADD_SPRINT': {
@@ -71,7 +83,7 @@ export default function (state = INITIAL_STATE, action) {
             }
         }
         case 'ADD_STORY': {
-            const { sprintId, title, description } = action.payload;
+            const { sprintId, title, description, assigned, statusId, pointId } = action.payload;
             const newState = Object.assign({}, state);
 
             let maxId = 0;
@@ -88,7 +100,9 @@ export default function (state = INITIAL_STATE, action) {
                     title: title,
                     description: description,
                     sprintId: sprintId,
-                    point: null
+                    assigned: assigned,
+                    statusId: statusId,
+                    pointId: pointId
                 })
             }
         }
@@ -192,16 +206,18 @@ export default function (state = INITIAL_STATE, action) {
             };
         }
         case 'CHANGE_CARD_ASSIGNED': {
-            const { mode, card, assigned } = action.payload;
+            const { mode, parentId, cardId, assigned } = action.payload;
 
             if (mode !== 'story') {
                 return state;
             }
 
+            const card = findCard(parentId, cardId, state);
+
             return {
                 ...state,
                 [card.sprintId]: state[card.sprintId].map((story) => {
-                    if (story.id === card.id) {
+                    if (story.id === cardId) {
                         return {
                             ...story,
                             assigned: assigned
@@ -213,16 +229,18 @@ export default function (state = INITIAL_STATE, action) {
             }
         }
         case 'CHANGE_CARD_STATUS': {
-            const { mode, card, statusId } = action.payload;
+            const { mode, parentId, cardId, statusId } = action.payload;
 
             if (mode !== 'story') {
                 return state;
             }
 
+            const card = findCard(parentId, cardId, state);
+
             return {
                 ...state,
                 [card.sprintId]: state[card.sprintId].map((story) => {
-                    if (story.id === card.id) {
+                    if (story.id === cardId) {
                         return {
                             ...story,
                             statusId: statusId
@@ -234,19 +252,44 @@ export default function (state = INITIAL_STATE, action) {
             }
         }
         case 'CHANGE_CARD_POINT': {
-            const { mode, card, pointId } = action.payload;
+            const { mode, parentId, cardId, pointId } = action.payload;
 
             if (mode !== 'story') {
                 return state;
+            }
+
+            const card = findCard(parentId, cardId, state);
+
+            return {
+                ...state,
+                [card.sprintId]: state[card.sprintId].map((story) => {
+                    if (story.id === cardId) {
+                        return {
+                            ...story,
+                            pointId: pointId
+                        }
+                    }
+
+                    return story;
+                })
+            }
+        }
+        case 'ADD_COMMENT_TO_STORY': {
+            const { card, body } = action.payload;
+            const comment = {
+                date: new Date().toDateString(),
+                body: body,
+                username: 'test user'
             }
 
             return {
                 ...state,
                 [card.sprintId]: state[card.sprintId].map((story) => {
                     if (story.id === card.id) {
+                        const comments = 'comments' in card ? card.comments.concat([comment]) : [comment]
                         return {
                             ...story,
-                            pointId: pointId
+                            comments: comments
                         }
                     }
 

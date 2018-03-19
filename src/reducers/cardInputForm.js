@@ -1,7 +1,7 @@
 const INITIAL_STATE = {
     open: false,
     dimmer: 'inverted',
-    card: null,
+    cardId: null,
     isEdit: false,
     isNew: true,
     mode: 'story',
@@ -12,12 +12,10 @@ const INITIAL_STATE = {
 export default function (state = INITIAL_STATE, action) {
     switch(action.type) {
         case 'SHOW_CARD_INPUT_FORM': {
-            const { card, mode, isNew, parentId } = action.payload;
+            const { cardId, mode, isNew, parentId } = action.payload;
             return Object.assign({}, state, {
                 open: true,
-                card: {
-                    ...card
-                },
+                cardId: cardId,
                 mode: mode,
                 isNew: isNew,
                 parentId: parentId,
@@ -25,12 +23,10 @@ export default function (state = INITIAL_STATE, action) {
             });
         }
         case 'HIDE_CARD_INPUT_FORM': {
-            const { card, mode, isNew, isEdit } = action.payload;
+            const { cardId, mode, isNew, isEdit } = action.payload;
             return Object.assign({}, state, {
                 open: false,
-                card: {
-                    ...card
-                },
+                cardId: cardId,
                 mode: mode,
                 isEdit: false
             });
@@ -39,28 +35,6 @@ export default function (state = INITIAL_STATE, action) {
             const { isEdit } = action.payload;
             return Object.assign({}, state, {
                 isEdit: isEdit
-            })
-        }
-        case 'UPDATE_STORY': {
-            const { story, title, description } = action.payload;
-
-            return Object.assign({}, state, {
-                card: {
-                    ...story,
-                    title: title,
-                    description: description
-                }
-            })
-        }
-        case 'UPDATE_TASK': {
-            const { task, title, description } = action.payload;
-
-            return Object.assign({}, state, {
-                card: {
-                    ...task,
-                    title: title,
-                    description: description
-                }
             })
         }
         case 'SWITCH_CONFIRM_DIALOG': {

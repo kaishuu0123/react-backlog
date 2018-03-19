@@ -1,0 +1,19 @@
+.Select-control {
+    height: 36px;
+
+    .Select-placeholder {
+        line-height: 36px;
+    }
+
+    .Select-value {
+        line-height: 36px !important;
+
+        .Select-value-label {
+            line-height: 36px;
+        }
+    }
+
+    .Select-input {
+        height: 36px;
+    }
+}
