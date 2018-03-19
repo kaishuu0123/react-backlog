@@ -1,10 +1,13 @@
-export function addStory (sprintId, title, description) {
+export function addStory (sprintId, title, description, assigned, statusId, pointId) {
     return {
         type: 'ADD_STORY',
         payload: {
             sprintId: sprintId,
             title: title,
-            description: description
+            description: description,
+            assigned: assigned,
+            statusId: statusId,
+            pointId: pointId
         }
     }
 }
@@ -49,6 +52,16 @@ export function attachToList(targetSprintId, sourceStoryId, sourceStoryIndex) {
             targetSprintId: targetSprintId,
             sourceStoryId: sourceStoryId,
             sourceStoryIndex: sourceStoryIndex,
+        }
+    }
+}
+
+export function addCommentToStory(card, body) {
+    return {
+        type: 'ADD_COMMENT_TO_STORY',
+        payload: {
+            card: card,
+            body: body
         }
     }
 }

@@ -20,6 +20,7 @@ import 'highlight.js/styles/github.css';
 import './react-codemirror_custom.css';
 
 import 'react-select/dist/react-select.css';
+import './react-select_custom.scss'
 
 document.addEventListener('DOMContentLoaded', () => {
   render(

@@ -129,7 +129,7 @@ class TaskCard extends React.Component {
 
     showDialog() {
         const { task } = this.props;
-        this.props.showCardInputForm(false, task, 'task', task.storyId);
+        this.props.showCardInputForm(false, task.id, 'task', task.storyId);
     }
 
     render() {
@@ -162,9 +162,13 @@ class TaskCard extends React.Component {
                         <Card.Content extra style={this.displayStyle(isDragging)}>
                             <Image size='mini' style={{width:'20px', height:'20px', margin: '0px'}} src={octCatSvg} />
                             <span className="right floated">
-                                <Icon name="file text outline" />
-                                2
-                                <Icon name="comment outline" />
+                                { task.comments &&
+                                    <span>
+                                        <Icon name="comment outline" />
+                                        {task.comments.length}
+                                    </span>
+                                }
+                                <Icon name="attach" />
                                 1
                             </span>
                         </Card.Content>

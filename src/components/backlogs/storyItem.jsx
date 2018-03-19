@@ -119,7 +119,7 @@ class StoryItem extends React.Component {
 
     showDialog() {
         const { story } = this.props;
-        this.props.showCardInputForm(false, story, 'story', story.sprintId)
+        this.props.showCardInputForm(false, story.id, 'story', story.sprintId)
     }
 
     render() {

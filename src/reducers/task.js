@@ -37,6 +37,24 @@ const INITIAL_STATE = {
     }
 }
 
+function findCard(parentId, cardId, tasks) {
+    let card;
+    Object.keys(tasks[parentId]).some((key) => {
+        tasks[parentId][key].some((task) => {
+            if (task.id === cardId) {
+                card = task;
+                return true;
+            }
+        })
+
+        if (card) {
+            return true;
+        }
+    })
+
+    return card;
+}
+
 function get(p, o) {
     return p.reduce((xs, x) => (xs && xs[x]) ? xs[x] : null, o);
 }
@@ -45,7 +63,7 @@ export default function (state = INITIAL_STATE, action) {
     switch(action.type) {
         case 'ADD_TASK': {
             const newState = Object.assign({}, state);
-            const { storyId, taskTitle, taskDescription } = action.payload;
+            const { storyId, title, description, assigned, statusId, pointId } = action.payload;
             let maxId = 0;
             const flattened = [].concat.apply([], Object.values(newState));
 
@@ -56,21 +74,26 @@ export default function (state = INITIAL_STATE, action) {
             });
 
             if (!(storyId in newState)) {
-                newState[storyId] = { 1: [] };
+                newState[storyId] = { [statusId]: [] };
+            }
+            if (!newState[storyId][statusId]) {
+                newState[storyId][statusId] = [];
             }
 
-            newState[storyId][1].push({
+            newState[storyId][statusId].push({
                 storyId: storyId,
                 id: maxId + 1,
-                title: taskTitle,
-                description: taskDescription,
-                statusId: 1
+                title: title,
+                description: description,
+                assigned: assigned,
+                statusId: statusId,
+                pointId: pointId
             });
             return {
                 ...state,
                 [storyId]: {
-                    1: [
-                        ...newState[storyId][1]
+                    [statusId]: [
+                        ...newState[storyId][statusId]
                     ],
                     ...state[storyId],
                 }
@@ -186,11 +209,13 @@ export default function (state = INITIAL_STATE, action) {
             }
         }
         case 'CHANGE_CARD_ASSIGNED': {
-            const { mode, card, assigned } = action.payload;
+            const { mode, parentId, cardId, assigned } = action.payload;
 
             if (mode !== 'task') {
                 return state;
             }
+
+            const card = findCard(parentId, cardId, state);
 
             return {
                 ...state,
@@ -210,11 +235,13 @@ export default function (state = INITIAL_STATE, action) {
             }
         }
         case 'CHANGE_CARD_STATUS': {
-            const { mode, card, statusId } = action.payload;
+            const { mode, parentId, cardId, statusId } = action.payload;
 
             if (mode !== 'task') {
                 return state;
             }
+
+            const card = findCard(parentId, cardId, state);
 
             if (card.statusId === statusId) {
                 return state;
@@ -236,6 +263,32 @@ export default function (state = INITIAL_STATE, action) {
                             statusId: statusId
                         })
                     ])
+                }
+            }
+        }
+        case 'ADD_COMMENT_TO_TASK': {
+            const { card, body } = action.payload;
+            const comment = {
+                date: new Date().toDateString(),
+                body: body,
+                username: 'test user'
+            }
+
+            return {
+                ...state,
+                [card.storyId]: {
+                    ...state[card.storyId],
+                    [card.statusId]: state[card.storyId][card.statusId].map((story) => {
+                        if (story.id === card.id) {
+                            const comments = 'comments' in card ? card.comments.concat([comment]) : [comment]
+                            return {
+                                ...story,
+                                comments: comments
+                            }
+                        }
+
+                        return story;
+                    })
                 }
             }
         }

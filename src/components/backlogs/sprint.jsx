@@ -100,9 +100,11 @@ class Sprint extends React.Component {
         const startDateId = `sprint_start_date_id_${sprint.id}`;
         const endDateId = `sprint_end_date_id_${sprint.id}`;
 
+        const [titleWidth, dateWidth, buttonWidth] = isEdit ? [6, 8, 2] : [4, 7, 5];
+
         return (
             <Grid.Row columns={3} verticalAlign='middle'>
-                <Grid.Column width={5}>
+                <Grid.Column width={titleWidth}>
                     { isEdit ? (
                         <Input
                             placeholder='Sprint Title'
@@ -114,7 +116,7 @@ class Sprint extends React.Component {
                     )}
                 </Grid.Column>
                 { isEdit ? (
-                        <Grid.Column width={9} textAlign='right'>
+                        <Grid.Column width={dateWidth} textAlign='right'>
                             <DateRangePicker
                                 startDate={this.state.startDate}
                                 startDateId={startDateId}
@@ -128,39 +130,39 @@ class Sprint extends React.Component {
                             />
                         </Grid.Column>
                     ) : (
-                        <Grid.Column width={8} textAlign='right' style={{padding: '0px'}}>
+                        <Grid.Column width={dateWidth} textAlign='right' style={{padding: '0px'}}>
                             { startDate && endDate &&
                                 <span>{startDate && startDate.format("YYYY/MM/DD")} 〜 {endDate && endDate.format("YYYY/MM/DD")}</span>
                             }
                         </Grid.Column>
                     )}
                 { isEdit ? (
-                    <Grid.Column width={2}>
+                    <Grid.Column width={buttonWidth}>
                         <Popup
-                            trigger={<Button compact size='mini' icon='save' circular floated="right" onClick={this.updateSprint} />}
+                            trigger={<Button size='mini' icon='save' circular floated="right" onClick={this.updateSprint} />}
                             content='Update Sprint'
                             position='top center'
                             on='hover'
                             />
                     </Grid.Column>
                 ) : (
-                    <Grid.Column width={3}>
+                    <Grid.Column width={buttonWidth}>
                         { sprint.id !== 1 &&
                             <Popup
-                                trigger={<Button compact size='mini' icon='edit' circular floated="right" onClick={this.editSprint}/>}
+                                trigger={<Button size='mini' icon='edit' circular floated="right" onClick={this.editSprint}/>}
                                 content='Edit Sprint'
                                 position='top center'
                                 />
                         }
                         { sprint.id !== 1 &&
                             <Popup
-                                trigger={<Button compact size='mini' icon='grid layout' circular floated="right" onClick={this.viewKanban}/>}
+                                trigger={<Button size='mini' icon='grid layout' circular floated="right" onClick={this.viewKanban}/>}
                                 content='View Kanban'
                                 position='top center'
                                 />
                         }
                         <Popup
-                            trigger={<Button compact size='mini' icon='plus' circular floated="right" onClick={this.showDialog} />}
+                            trigger={<Button size='mini' icon='plus' circular floated="right" onClick={this.showDialog} />}
                             content='Add Story'
                             position='top center'
                             on='hover'

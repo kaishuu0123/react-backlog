@@ -10,13 +10,16 @@ function changeStateSuccess(newStoryId, task, afterState, index) {
     }
 }
 
-function addTaskSuccess(storyId, taskTitle, taskDescription, state) {
+function addTaskSuccess(storyId, taskTitle, taskDescription, assigned, statusId, pointId) {
     return {
         type: 'ADD_TASK',
         payload: {
             storyId: storyId,
-            taskTitle: taskTitle,
-            taskDescription: taskDescription
+            title: taskTitle,
+            description: taskDescription,
+            assigned: assigned,
+            statusId: statusId,
+            pointId: pointId
         }
     }
 }
@@ -29,10 +32,10 @@ export function changeTaskState(storyId, taskId, afterState, index) {
     }
 }
 
-export function addTask(storyId, taskTitle, taskDescription) {
+export function addTask(storyId, taskTitle, taskDescription, assigned, statusId, pointId) {
     return (dispatch) => {
         return (
-            dispatch(addTaskSuccess(storyId, taskTitle, taskDescription))
+            dispatch(addTaskSuccess(storyId, taskTitle, taskDescription, assigned, statusId, pointId))
         );
     }
 }
@@ -78,6 +81,16 @@ export function deleteTask(task) {
         type: 'DELETE_TASK',
         payload: {
             task: task
+        }
+    }
+}
+
+export function addCommentToTask(card, body) {
+    return {
+        type: 'ADD_COMMENT_TO_TASK',
+        payload: {
+            card: card,
+            body: body
         }
     }
 }
