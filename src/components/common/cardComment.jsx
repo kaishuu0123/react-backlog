@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Button, Comment, Form, Header, Segment } from 'semantic-ui-react'
+import { Button, Comment, Form, Header, Segment, Container } from 'semantic-ui-react'
+import Mousetrap from 'mousetrap';
 import ReactMarkdown from 'react-markdown';
 import TableBlock from '../markdown-renderer/tableBlock.jsx';
 import CodeBlock from '../markdown-renderer/codeBlock.jsx';
@@ -23,10 +24,29 @@ class CardComment extends React.Component {
         super(props)
 
         this.addComment = this.addComment.bind(this);
+        this.addCommentOnFocus = this.addCommentOnFocus.bind(this);
 
         this.state = {
             body: ''
         }
+    }
+
+    componentWillMount() {
+        Mousetrap.bindGlobal(['command+enter', 'ctrl+enter'], function(e) {
+            this.addCommentOnFocus();
+
+            return false;
+        }.bind(this));
+    }
+
+    addCommentOnFocus() {
+        const { focused } = this.state;
+
+        if (!focused) {
+            return;
+        }
+
+        this.addComment()
     }
 
     addComment() {
@@ -83,16 +103,31 @@ class CardComment extends React.Component {
                 ))}
 
                 <Form style={{marginTop: '1em'}}>
-                    <Segment style={{padding: '0.5em'}}>
+                    <Segment style={{padding: '0.5em', marginBottom: '0.2em'}}>
                         <CodeMirrorInput
                             onBeforeChange={(editor, data, value) => {
                                 this.setState({body: value})
                             }}
+                            placeholder='Write comment'
                             value={this.state.body}
                             height={'auto'}
+                            onFocus={(editor, event) => {
+                                this.setState({
+                                    focused: true
+                                })
+                            }}
+                            onBlur={(editor, event) => {
+                                this.setState({
+                                    focused: false
+                                })
+                            }}
                         />
                     </Segment>
-                    <Button compact content='Add Reply' labelPosition='left' icon='edit' primary onClick={this.addComment} />
+                    <Container textAlign='right' style={{fontSize: '0.9em'}}>
+                        <a href='https://github.github.com/gfm/'>GitHub Flavored Markdown</a> supported
+                        <p>submit shortcut. (Ctrl + Enter)</p>
+                    </Container>
+                    <Button compact size='tiny' content='Add Reply' labelPosition='left' icon='edit' primary onClick={this.addComment} />
                 </Form>
             </Comment.Group>
         )

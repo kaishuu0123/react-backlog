@@ -5,7 +5,6 @@ import {
     Ref,
     Grid,
     Form,
-    Card,
     Icon,
     Button,
     Modal,
@@ -13,7 +12,7 @@ import {
     Popup,
     Segment,
     Input,
-    Divider
+    Container
 } from 'semantic-ui-react';
 import Mousetrap from 'mousetrap';
 import isEmpty from 'lodash/isEmpty';
@@ -395,27 +394,45 @@ class CardInputForm extends React.Component {
 
     renderDescription() {
         const { isNew, isEdit } = this.props;
-        const { title, description } = this.state;
+        const { title, description, isCodeMirrorFocus } = this.state;
+
+        let descriptionStyle = {
+            padding: '0em',
+            borderBottom: '0px'
+        }
+        if (isEdit && isCodeMirrorFocus) {
+            descriptionStyle = codeMirrorFocusSegmentStyle;
+        } else if(isEdit) {
+            descriptionStyle = codeMirrorNonFocusSegmentStyle;
+        }
 
         if (isEdit || isNew) {
             return (
-                <CodeMirrorInput
-                    onBeforeChange={(editor, data, value) => {
-                        this.setState({description: value});
-                    }}
-                    onFocus={(editor, event) => {
-                        this.setState({
-                            isCodeMirrorFocus: false
-                        })
-                    }}
-                    onBlur={(editor, event) => {
-                        this.setState({
-                            isCodeMirrorFocus: true
-                        })
-                    }}
-                    value={description}
-                    height={'auto'}
-                />
+                <div>
+                    <Segment style={descriptionStyle} vertical>
+                        <CodeMirrorInput
+                            onBeforeChange={(editor, data, value) => {
+                                this.setState({description: value});
+                            }}
+                            onFocus={(editor, event) => {
+                                this.setState({
+                                    isCodeMirrorFocus: true
+                                })
+                            }}
+                            onBlur={(editor, event) => {
+                                this.setState({
+                                    isCodeMirrorFocus: false
+                                })
+                            }}
+                            value={description}
+                            height={'auto'}
+                            placeholder='Write description'
+                        />
+                    </Segment>
+                    <Container textAlign='right' style={{fontSize: '0.9em'}}>
+                        <a href='https://github.github.com/gfm/'>GitHub Flavored Markdown</a> supported.
+                    </Container>
+                </div>
             );
         }
 
@@ -513,16 +530,6 @@ class CardInputForm extends React.Component {
             comments = card.comments;
         }
 
-        let descriptionStyle = {
-            padding: '0em',
-            borderBottom: '0px'
-        }
-        if (isEdit && isCodeMirrorFocus) {
-            descriptionStyle = codeMirrorFocusSegmentStyle;
-        } else if(isEdit) {
-            descriptionStyle = codeMirrorNonFocusSegmentStyle;
-        }
-
         return (
             <div>
                 <Modal dimmer={dimmer} open={open}>
@@ -534,17 +541,16 @@ class CardInputForm extends React.Component {
                             <Grid columns={2}>
                                 <Grid.Row>
                                     <Grid.Column width={11}>
-                                        <Header as='h3' dividing>
+                                        <Header as='h5' dividing disabled>
                                             <Icon name='file text outline' />
                                             <Header.Content>
                                                 Description
                                             </Header.Content>
                                         </Header>
-                                        <Segment style={descriptionStyle} vertical>
-                                            {this.renderDescription()}
-                                        </Segment>
 
-                                        <Header as='h3' dividing>
+                                        {this.renderDescription()}
+
+                                        <Header as='h5' dividing disabled>
                                             <Icon name='comments outline' />
                                             <Header.Content>
                                                 Comments
@@ -596,7 +602,7 @@ class CardInputForm extends React.Component {
                                                 </Grid.Row>
                                             }
                                         </Grid>
-                                        <Header as='h3' dividing>
+                                        <Header as='h5' dividing disabled>
                                             <Icon name='attach' />
                                             <Header.Content>
                                                 Files
@@ -605,8 +611,6 @@ class CardInputForm extends React.Component {
                                     </Grid.Column>
                                 </Grid.Row>
                             </Grid>
-                        </Modal.Description>
-                        <Modal.Description style={{marginTop: '1em'}}>
                         </Modal.Description>
                     </Modal.Content>
                     <Popup
